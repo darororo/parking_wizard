@@ -5,6 +5,9 @@ class HistoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Text('This is the history screen'));
+    return Scaffold(
+      appBar: AppBar(title: Text('GLORY TO ROME')),
+      body: Text('This is the history screen'),
+    );
   }
 }

@@ -5,6 +5,9 @@ class SettingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Text('This is the setting screen'));
+    return Scaffold(
+      appBar: AppBar(title: Text('Settings')),
+      body: Text('This is the setting screen'),
+    );
   }
 }
