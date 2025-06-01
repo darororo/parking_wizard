@@ -4,11 +4,11 @@ import 'package:parking_wizard/routes/router.dart';
 import 'package:parking_wizard/ui/screens/home_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MainApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
 
   // This widget is the root of your application.
   @override
