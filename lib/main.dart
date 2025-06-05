@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:parking_wizard/routes/router.dart';
-import 'package:parking_wizard/ui/screens/home_screen.dart';
 
 void main() {
   runApp(const MainApp());
