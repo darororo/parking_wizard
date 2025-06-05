@@ -1,12 +1,10 @@
-//
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ic.dart';
 import 'package:iconify_flutter/icons/heroicons.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:iconify_flutter/icons/mdi.dart';
 
 class LayoutShell extends StatelessWidget {
   const LayoutShell({required this.navigationShell, Key? key})
@@ -18,34 +16,79 @@ class LayoutShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        shape: const CircleBorder(),
-        tooltip: 'FLAME',
-        backgroundColor: Color(0xFF407BFF),
-        child: SvgPicture.asset(
-          "assets/svg/mdi--fire.svg",
-          width: 40,
-          height: 40,
-          colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
-        ),
-      ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: navigationShell.goBranch,
-        destinations: destinations
-            .map(
-              (dest) => NavigationDestination(
-                icon: Iconify(
-                  _getIconData(dest.icon),
-                  size: 26,
-                  color: Colors.blueGrey,
-                ),
-                label: dest.label,
+      // No floatingActionButton!
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        notchMargin: 8,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            // Left icon
+            IconButton(
+              icon: Iconify(
+                _getIconData(destinations[0].icon),
+                size: 28,
+                color: navigationShell.currentIndex == 0
+                    ? Colors.blue
+                    : Colors.blueGrey,
               ),
-            )
-            .toList(),
+              onPressed: () => navigationShell.goBranch(0),
+              tooltip: destinations[0].label,
+            ),
+            // Second icon
+            IconButton(
+              icon: Iconify(
+                _getIconData(destinations[1].icon),
+                size: 28,
+                color: navigationShell.currentIndex == 1
+                    ? Colors.blue
+                    : Colors.blueGrey,
+              ),
+              onPressed: () => navigationShell.goBranch(1),
+              tooltip: destinations[1].label,
+            ),
+            // Center button
+            SizedBox(
+              width: 56,
+              height: 56,
+              child: Material(
+                color: const Color(0xFF407BFF),
+                shape: const CircleBorder(),
+                child: IconButton(
+                  icon: Iconify(Mdi.fire, size: 36, color: Colors.white),
+                  onPressed: () {
+                    // Center button action
+                  },
+                  tooltip: 'FLAME',
+                ),
+              ),
+            ),
+            // Third icon
+            IconButton(
+              icon: Iconify(
+                _getIconData(destinations[2].icon),
+                size: 28,
+                color: navigationShell.currentIndex == 2
+                    ? Colors.blue
+                    : Colors.blueGrey,
+              ),
+              onPressed: () => navigationShell.goBranch(2),
+              tooltip: destinations[2].label,
+            ),
+            // Right icon
+            IconButton(
+              icon: Iconify(
+                _getIconData(destinations[3].icon),
+                size: 28,
+                color: navigationShell.currentIndex == 3
+                    ? Colors.blue
+                    : Colors.blueGrey,
+              ),
+              onPressed: () => navigationShell.goBranch(3),
+              tooltip: destinations[3].label,
+            ),
+          ],
+        ),
       ),
     );
   }
