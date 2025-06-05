@@ -6,6 +6,7 @@ import 'package:iconify_flutter/iconify_flutter.dart';
 import 'package:iconify_flutter/icons/ic.dart';
 import 'package:iconify_flutter/icons/heroicons.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LayoutShell extends StatelessWidget {
   const LayoutShell({required this.navigationShell, Key? key})
@@ -17,6 +18,19 @@ class LayoutShell extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: navigationShell,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        shape: const CircleBorder(),
+        tooltip: 'FLAME',
+        backgroundColor: Color(0xFF407BFF),
+        child: SvgPicture.asset(
+          "assets/svg/mdi--fire.svg",
+          width: 40,
+          height: 40,
+          colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
+        ),
+      ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: navigationShell.goBranch,
