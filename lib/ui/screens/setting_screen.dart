@@ -11,7 +11,10 @@ class SettingScreen extends StatelessWidget {
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [const Text('This is setting page')],
+          children: [
+            const Text('This is setting page'),
+            Icon(Icons.access_time_filled_rounded),
+          ],
         ),
       ),
     );

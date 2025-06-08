@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/ui/layouts/layout_shell.dart';
 import 'package:parking_wizard/ui/screens/history_screen.dart';
-import 'package:parking_wizard/ui/screens/homescreen/home_screen.dart';
-import 'package:parking_wizard/ui/screens/homescreen/home_screen1.dart';
-import 'package:parking_wizard/ui/screens/homescreen/welcome_screen.dart';
+import 'package:parking_wizard/ui/screens/welcome/home_screen.dart';
+import 'package:parking_wizard/ui/screens/welcome/home_screen1.dart';
+import 'package:parking_wizard/ui/screens/welcome/home_screen2.dart';
+import 'package:parking_wizard/ui/screens/welcome/welcome_screen.dart';
 import 'package:parking_wizard/ui/screens/save_screen.dart';
 import 'package:parking_wizard/ui/screens/setting_screen.dart';
-import '../ui/screens/homescreen/home_screen2.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -29,17 +29,17 @@ final router = GoRouter(
             GoRoute(
               path: Routes.homeScreen1,
               builder: (context, state) =>
-              const HomeScreen1(title: 'Home Screen 1'),
+                  const HomeScreen1(title: 'Home Screen 1'),
             ),
             GoRoute(
               path: Routes.homeScreen2,
               builder: (context, state) =>
-              const HomeScreen2(title: 'Home Screen 2'),
+                  const HomeScreen2(title: 'Home Screen 2'),
             ),
             GoRoute(
               path: Routes.welcomeScreen,
               builder: (context, state) =>
-              const WelcomeScreen(title: 'Welcome Screen'),
+                  const WelcomeScreen(title: 'Welcome Screen'),
             ),
           ],
         ),
@@ -84,5 +84,4 @@ class Routes {
   static const String saveScreen = '/save';
   static const String historyScreen = '/history';
   static const String settingScreen = '/setting';
-
 }
