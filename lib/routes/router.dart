@@ -39,7 +39,7 @@ final router = GoRouter(
             GoRoute(
               path: Routes.settingScreen,
               builder: (context, state) =>
-                  const HistoryScreen(title: 'History Screen'),
+                  const HistoryScreen(title: 'Parking History'),
             ),
           ],
         ),
