@@ -60,13 +60,6 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-
-  fonts:
-    - family: Montserrat
-      fonts:
-        - asset: assets/fonts/montserrat/Montserrat-SemiBold.ttf
-          weight: 600
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
