@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/ui/layouts/layout_shell.dart';
 import 'package:parking_wizard/ui/screens/history_screen.dart';
-import 'package:parking_wizard/ui/screens/home_screen.dart';
+import 'package:parking_wizard/ui/screens/home_screen/home_screen.dart';
 import 'package:parking_wizard/ui/screens/welcome/home_screen1.dart';
 import 'package:parking_wizard/ui/screens/welcome/home_screen2.dart';
 import 'package:parking_wizard/ui/screens/welcome/welcome_screen.dart';
