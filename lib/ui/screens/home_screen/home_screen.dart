@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:parking_wizard/providers/home_screen/parking_bottom_sheet_provider.dart';
+import 'package:parking_wizard/ui/screens/home_screen/open_street_map.dart';
 import 'package:parking_wizard/ui/screens/home_screen/widgets/cat_bottom_sheet.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -13,18 +13,11 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  late GoogleMapController mapController;
-  final LatLng _center = const LatLng(11.57, 104.89);
-
   void _openBottomSheet() {
     showModalBottomSheet(
       context: context,
       builder: (ctx) => const CatBottomSheet(),
     );
-  }
-
-  void _onMapCreated(GoogleMapController controller) {
-    mapController = controller;
   }
 
   @override
@@ -55,10 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      body: GoogleMap(
-        onMapCreated: _onMapCreated,
-        initialCameraPosition: CameraPosition(target: _center, zoom: 16.0),
-      ),
+      body: OpenStreetMapWidget(),
     );
   }
 }
