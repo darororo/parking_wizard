@@ -41,7 +41,7 @@ class HomeScreen1 extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back_ios),
                       color: Colors.black,
                       onPressed: () {
-                        context.go(Routes.homeScreen);
+                        context.go(Routes.home);
                       },
                     ),
                   ),

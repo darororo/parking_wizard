@@ -8,21 +8,39 @@ import 'package:parking_wizard/ui/screens/welcome/home_screen2.dart';
 import 'package:parking_wizard/ui/screens/welcome/welcome_screen.dart';
 import 'package:parking_wizard/ui/screens/save_screen.dart';
 import 'package:parking_wizard/ui/screens/setting_screen.dart';
+import 'package:parking_wizard/ui/screens/language_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
+class Routes {
+  Routes._();
+  static const String home = '/home';
+  static const String save = '/save';
+  static const String history = '/history';
+  static const String settings = '/settings';
+  static const String language = '/language';
+  
+  static const String homeScreen1 = '/home1';
+  static const String homeScreen2 = '/home2';
+  static const String welcomeScreen = '/welcome';
+  
+  
+  
+}
+
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: Routes.homeScreen,
+  initialLocation: Routes.home,
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
           LayoutShell(navigationShell: navigationShell),
       branches: [
+        // Home Branch
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.homeScreen,
+              path: Routes.home,
               builder: (context, state) =>
                   const HomeScreen(title: 'Home Screen'),
             ),
@@ -43,30 +61,39 @@ final router = GoRouter(
             ),
           ],
         ),
+        // Save Branch
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.saveScreen,
-              builder: (context, state) =>
-                  const SaveScreen(title: 'Save Screen'),
+              path: Routes.save,
+              builder: (context, state) => const SaveScreen(title: 'Save'),
             ),
           ],
         ),
+        // History Branch
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.settingScreen,
+              path: Routes.history,
               builder: (context, state) =>
                   const HistoryScreen(title: 'Parking History'),
+              
             ),
           ],
         ),
+        // Settings Branch
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.historyScreen,
-              builder: (context, state) =>
-                  const SettingScreen(title: 'Setting Screen'),
+              path: Routes.settings,
+              builder: (context, state) => const SettingScreen(),
+              routes: [
+                // Nested language route under settings
+                GoRoute(
+                  path: 'language',
+                  builder: (context, state) => const LanguageScreen(),
+                ),
+              ],
             ),
           ],
         ),
@@ -74,14 +101,3 @@ final router = GoRouter(
     ),
   ],
 );
-
-class Routes {
-  Routes._();
-  static const String homeScreen = '/home';
-  static const String homeScreen1 = '/home1';
-  static const String homeScreen2 = '/home2';
-  static const String welcomeScreen = '/welcome';
-  static const String saveScreen = '/save';
-  static const String historyScreen = '/history';
-  static const String settingScreen = '/setting';
-}
