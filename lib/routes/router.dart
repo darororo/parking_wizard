@@ -7,7 +7,7 @@ import 'package:parking_wizard/ui/screens/welcome/home_screen1.dart';
 import 'package:parking_wizard/ui/screens/welcome/home_screen2.dart';
 import 'package:parking_wizard/ui/screens/welcome/welcome_screen.dart';
 import 'package:parking_wizard/ui/screens/save_screen.dart';
-import 'package:parking_wizard/ui/screens/setting_screen.dart';
+import 'package:parking_wizard/ui/screens/setting_screen/setting_screen.dart';
 import 'package:parking_wizard/ui/screens/setting_screen/language_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -19,13 +19,10 @@ class Routes {
   static const String history = '/history';
   static const String settings = '/settings';
   static const String language = '/language';
-  
+
   static const String homeScreen1 = '/home1';
   static const String homeScreen2 = '/home2';
   static const String welcomeScreen = '/welcome';
-  
-  
-  
 }
 
 final router = GoRouter(
@@ -77,7 +74,6 @@ final router = GoRouter(
               path: Routes.history,
               builder: (context, state) =>
                   const HistoryScreen(title: 'Parking History'),
-              
             ),
           ],
         ),

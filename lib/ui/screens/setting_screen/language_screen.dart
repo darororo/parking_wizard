@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parking_wizard/ui/navigationTile/language_tile.dart';
+import 'package:parking_wizard/ui/screens/setting_screen/widgets/language_tile.dart';
 
 class LanguageScreen extends StatefulWidget {
   const LanguageScreen({super.key});
@@ -14,11 +14,11 @@ class _LanguageScreenState extends State<LanguageScreen> {
   final List<Map<String, String>> languages = [
     {'flag': '🇰🇭', 'name': 'Khmer', 'region': 'Cambodia'},
     {'flag': '🇬🇧', 'name': 'English', 'region': 'UK'},
-    {'flag': '🇹🇭', 'name': 'Thai', 'region': 'Thailand'},
-    {'flag': '🇮🇳', 'name': 'Hindi', 'region': 'India'},
-    {'flag': '🇻🇳', 'name': 'Vietnamese', 'region': 'Vietnam'},
-    {'flag': '🇰🇷', 'name': 'Korean', 'region': 'Korea'},
-    {'flag': '🇯🇵', 'name': 'Japanese', 'region': 'Japan'},
+    // {'flag': '🇹🇭', 'name': 'Thai', 'region': 'Thailand'},
+    // {'flag': '🇮🇳', 'name': 'Hindi', 'region': 'India'},
+    // {'flag': '🇻🇳', 'name': 'Vietnamese', 'region': 'Vietnam'},
+    // {'flag': '🇰🇷', 'name': 'Korean', 'region': 'Korea'},
+    // {'flag': '🇯🇵', 'name': 'Japanese', 'region': 'Japan'},
   ];
 
   @override
