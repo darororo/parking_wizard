@@ -8,7 +8,7 @@ import 'package:parking_wizard/ui/screens/welcome/home_screen2.dart';
 import 'package:parking_wizard/ui/screens/welcome/welcome_screen.dart';
 import 'package:parking_wizard/ui/screens/save_screen.dart';
 import 'package:parking_wizard/ui/screens/setting_screen.dart';
-import 'package:parking_wizard/ui/screens/language_screen.dart';
+import 'package:parking_wizard/ui/screens/setting_screen/language_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 

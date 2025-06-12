@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/ui/screens/setting_screen/language_screen.dart';
 
 class SettingScreen extends StatefulWidget {
@@ -76,14 +77,14 @@ class _SettingScreenState extends State<SettingScreen> {
               ListTile(
                 title: const Text('Language'),
                 trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LanguageScreen(),
-                    ),
-                  );
-                },
+                onTap: () { context.go('/settings/language');},
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //     builder: (context) => const LanguageScreen(),
+                  //   ),
+                  // );
+          
               ),
             ),
 
