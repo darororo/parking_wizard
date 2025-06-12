@@ -68,6 +68,7 @@ flutter:
   assets:
     - assets/png/
     - assets/svg/
+    - assets/images/
 
   # For details regarding adding assets from package dependencies, see
   # https://flutter.dev/to/asset-from-package
