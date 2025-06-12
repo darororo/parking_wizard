@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:parking_wizard/providers/home_screen/parking_bottom_sheet_provider.dart';
 import 'package:parking_wizard/ui/screens/home_screen/widgets/cat_bottom_sheet.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   final String title;
   const HomeScreen({super.key, required this.title});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   late GoogleMapController mapController;
   final LatLng _center = const LatLng(11.57, 104.89);
 
@@ -27,6 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final toggleParkingBottomSheet = ref.watch(parkingBottomSheetProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),

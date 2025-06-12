@@ -30,7 +30,9 @@ class CatBottomSheet extends StatelessWidget {
                     height: 28,
                   ),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
                     icon: const Icon(
                       Icons.close_rounded,
                       color: Color(0xFFFFFFFF),
