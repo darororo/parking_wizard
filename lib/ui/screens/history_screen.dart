@@ -217,6 +217,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Row filterButtonWidget() {
+    // DateTime selectedDate = DateTime.now();
+    DateTime selectedDate = DateTime.now();
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -234,7 +236,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 10),
               ),
-              onPressed: () {},
+              onPressed: () async {
+                final DateTime? dateTime = await showDatePicker(
+                  context: context,
+                  initialDate: selectedDate,
+                  firstDate: DateTime(2000),
+                  lastDate: DateTime(2050),
+                );
+                if (dateTime != null) {
+                  setState(() {
+                    selectedDate = dateTime;
+                  });
+                }
+              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
