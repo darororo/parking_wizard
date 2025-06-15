@@ -5,6 +5,7 @@ import 'package:iconify_flutter/icons/ic.dart';
 import 'package:iconify_flutter/icons/heroicons.dart';
 import 'package:iconify_flutter/icons/material_symbols.dart';
 import 'package:iconify_flutter/icons/mdi.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LayoutShell extends StatelessWidget {
   const LayoutShell({required this.navigationShell, Key? key})
@@ -15,77 +16,92 @@ class LayoutShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: navigationShell,
-      // No floatingActionButton!
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        notchMargin: 8,
+      body: SafeArea(child: navigationShell),
+      bottomNavigationBar: Container(
+        height: 70,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          border: Border(top: BorderSide(color: Colors.grey, width: 0.5)),
+          boxShadow: [
+            BoxShadow(
+              color: Color.fromRGBO(0, 0, 0, 0.24),
+              offset: Offset(0, 3),
+              blurRadius: 8,
+            ),
+          ],
+        ),
+
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            // Left icon
-            IconButton(
-              icon: Iconify(
-                _getIconData(destinations[0].icon),
-                size: 28,
-                color: navigationShell.currentIndex == 0
-                    ? Colors.blue
-                    : Colors.blueGrey,
-              ),
-              onPressed: () => navigationShell.goBranch(0),
-              tooltip: destinations[0].label,
-            ),
-            // Second icon
-            IconButton(
-              icon: Iconify(
-                _getIconData(destinations[1].icon),
-                size: 28,
-                color: navigationShell.currentIndex == 1
-                    ? Colors.blue
-                    : Colors.blueGrey,
-              ),
-              onPressed: () => navigationShell.goBranch(1),
-              tooltip: destinations[1].label,
-            ),
-            // Center button
-            SizedBox(
-              width: 56,
-              height: 56,
-              child: Material(
+            _buildNavItem(context, 0),
+            _buildNavItem(context, 1),
+            _buildCenterButton(context),
+            _buildNavItem(context, 2),
+            _buildNavItem(context, 3),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCenterButton(BuildContext context) {
+    return Expanded(
+      child: InkWell(
+        onTap: () {
+          // Handle center action here
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
                 color: const Color(0xFF407BFF),
-                shape: const CircleBorder(),
-                child: IconButton(
-                  icon: Iconify(Mdi.fire, size: 36, color: Colors.white),
-                  onPressed: () {
-                    // Center button action
-                  },
-                  tooltip: 'FLAME',
-                ),
+                borderRadius: BorderRadius.circular(12), // Not fully round
+              ),
+              child: Center(
+                child: Iconify(Mdi.fire, size: 28, color: Colors.white),
               ),
             ),
-            // Third icon
-            IconButton(
-              icon: Iconify(
-                _getIconData(destinations[2].icon),
-                size: 28,
-                color: navigationShell.currentIndex == 2
-                    ? Colors.blue
-                    : Colors.blueGrey,
+            const SizedBox(height: 4),
+            Text(
+              'PARK',
+              style: GoogleFonts.poppins(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
               ),
-              onPressed: () => navigationShell.goBranch(2),
-              tooltip: destinations[2].label,
             ),
-            // Right icon
-            IconButton(
-              icon: Iconify(
-                _getIconData(destinations[3].icon),
-                size: 28,
-                color: navigationShell.currentIndex == 3
-                    ? Colors.blue
-                    : Colors.blueGrey,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(BuildContext context, int index) {
+    final destination = destinations[index];
+    final isSelected = navigationShell.currentIndex == index;
+
+    return Expanded(
+      child: InkWell(
+        onTap: () => navigationShell.goBranch(index),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Iconify(
+              _getIconData(destination.icon),
+              size: 24,
+              color: isSelected ? Colors.blue : Colors.blueGrey,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              destination.label,
+              style: GoogleFonts.poppins(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? Colors.blue : Colors.blueGrey,
               ),
-              onPressed: () => navigationShell.goBranch(3),
-              tooltip: destinations[3].label,
             ),
           ],
         ),
