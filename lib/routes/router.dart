@@ -4,9 +4,11 @@ import 'package:parking_wizard/ui/layouts/layout_shell.dart';
 import 'package:parking_wizard/ui/screens/history_screen.dart';
 import 'package:parking_wizard/ui/screens/home_screen/home_screen.dart';
 import 'package:parking_wizard/ui/screens/parking/create_parking.dart';
-import 'package:parking_wizard/ui/screens/welcome/home_screen1.dart';
-import 'package:parking_wizard/ui/screens/welcome/home_screen2.dart';
-import 'package:parking_wizard/ui/screens/welcome/welcome_screen.dart';
+import 'package:parking_wizard/ui/screens/parking_detail_screen.dart';
+import 'package:parking_wizard/ui/screens/welcome/welcome_1.dart';
+import 'package:parking_wizard/ui/screens/welcome/welcome_2.dart';
+import 'package:parking_wizard/ui/screens/welcome/welcome_3.dart';
+import 'package:parking_wizard/ui/screens/welcome/welcome_4.dart';
 import 'package:parking_wizard/ui/screens/save_screen.dart';
 import 'package:parking_wizard/ui/screens/setting_screen/setting_screen.dart';
 import 'package:parking_wizard/ui/screens/setting_screen/language_screen.dart';
@@ -21,8 +23,10 @@ class Routes {
   static const String settings = '/settings';
   static const String language = '/language';
 
-  static const String homeScreen1 = '/home1';
-  static const String homeScreen2 = '/home2';
+  static const String parkingDetail = '/parking';
+
+  static const String welcome1 = '/welcome';
+  static const String welcome2 = '/welcome';
   static const String welcomeScreen = '/welcome';
 
   static const String parkingCreate = '/parking/create';
@@ -36,6 +40,32 @@ final router = GoRouter(
       builder: (context, state, navigationShell) =>
           LayoutShell(navigationShell: navigationShell),
       branches: [
+        // // Welcome Branch
+        // StatefulShellBranch(
+        //   routes: [
+        //     GoRoute(
+        //       path: '/welcome',
+        //       builder: (context, state) => const Welcome1(title: 'Home Screen'),
+        //       routes: [
+        //         GoRoute(
+        //           path: '2',
+        //           builder: (context, state) =>
+        //               const Welcome2(title: 'Home Screen 1'),
+        //         ),
+        //         GoRoute(
+        //           path: '3',
+        //           builder: (context, state) =>
+        //               const Welcome3(title: 'Home Screen 1'),
+        //         ),
+        //         GoRoute(
+        //           path: '4',
+        //           builder: (context, state) => const Welcome4(title: 'title'),
+        //         ),
+        //       ],
+        //     ),
+        //   ],
+        // ),
+
         // Home Branch
         StatefulShellBranch(
           routes: [
@@ -43,21 +73,6 @@ final router = GoRouter(
               path: Routes.home,
               builder: (context, state) =>
                   const HomeScreen(title: 'Home Screen'),
-            ),
-            GoRoute(
-              path: Routes.homeScreen1,
-              builder: (context, state) =>
-                  const HomeScreen1(title: 'Home Screen 1'),
-            ),
-            GoRoute(
-              path: Routes.homeScreen2,
-              builder: (context, state) =>
-                  const HomeScreen2(title: 'Home Screen 2'),
-            ),
-            GoRoute(
-              path: Routes.welcomeScreen,
-              builder: (context, state) =>
-                  const WelcomeScreen(title: 'Welcome Screen'),
             ),
           ],
         ),
@@ -77,6 +92,17 @@ final router = GoRouter(
               path: Routes.history,
               builder: (context, state) =>
                   const HistoryScreen(title: 'Parking History'),
+              routes: [
+                GoRoute(
+                  path: Routes.parkingDetail,
+                  builder: (context, state) => const ParkingDetailScreen(
+                    title: '',
+                    description: '',
+                    imgUrl: '',
+                    time: '',
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -102,6 +128,20 @@ final router = GoRouter(
             GoRoute(
               path: Routes.parkingCreate,
               builder: (context, state) => const CreateParking(),
+            ),
+          ],
+        ),
+
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.parkingDetail,
+              builder: (context, state) => const ParkingDetailScreen(
+                title: '',
+                description: '',
+                imgUrl: '',
+                time: '',
+              ),
             ),
           ],
         ),

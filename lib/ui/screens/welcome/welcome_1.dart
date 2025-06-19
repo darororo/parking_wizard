@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/routes/router.dart';
 
-class HomeScreen extends StatelessWidget {
+class Welcome1 extends StatelessWidget {
   final String title;
-  const HomeScreen({super.key, required this.title});
+  const Welcome1({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class HomeScreen extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 30),
             child: Text(
-            "Find Parking Sport Around You Easily",
+              "Find Parking Sport Around You Easily",
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -83,7 +83,7 @@ class HomeScreen extends StatelessWidget {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  context.go(Routes.homeScreen1);
+                  context.push('/welcome/2');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF407bff),

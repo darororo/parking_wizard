@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:parking_wizard/ui/screens/home_screen/open_street_map.dart';
+import 'package:parking_wizard/ui/screens/open_street_map.dart';
 
 class CreateParking extends StatelessWidget {
   const CreateParking({super.key});

@@ -7,13 +7,14 @@ class ParkingItemWidget extends StatelessWidget {
     required this.title,
     required this.description,
     required this.time,
+    required this.onTap,
   });
 
   final String imgUrl;
   final String title;
   final String description;
   final String time;
-
+  final VoidCallback onTap;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -55,6 +56,7 @@ class ParkingItemWidget extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // title row
                   SizedBox(
                     height: 20,
                     child: Container(
@@ -84,6 +86,8 @@ class ParkingItemWidget extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // description
                   SizedBox(
                     width: 220, // Set your desired width
                     child: Padding(
@@ -101,9 +105,11 @@ class ParkingItemWidget extends StatelessWidget {
                       ),
                     ),
                   ),
+
+                  // time and more details
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    // crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 16),
@@ -117,26 +123,30 @@ class ParkingItemWidget extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 16, right: 10),
-                        child: Row(
-                          children: [
-                            Text(
-                              "More Details",
-                              style: const TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontSize: 11,
-                                fontWeight: FontWeight.w500,
+
+                      GestureDetector(
+                        onTap: onTap,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 16, right: 10),
+                          child: Row(
+                            children: [
+                              const Text(
+                                "More Details",
+                                style: TextStyle(
+                                  fontFamily: 'Montserrat',
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.blueAccent,
+                                ),
+                              ),
+                              const SizedBox(width: 2),
+                              const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 14,
                                 color: Colors.blueAccent,
                               ),
-                            ),
-                            const SizedBox(width: 2),
-                            const Icon(
-                              Icons.arrow_forward_ios,
-                              size: 14,
-                              color: Colors.blueAccent,
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],

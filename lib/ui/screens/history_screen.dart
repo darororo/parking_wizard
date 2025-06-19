@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/ui/widgets/history/parking_item_widget.dart';
 
 class ParkingHistoryItem {
@@ -172,6 +173,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         imgUrl: item.imgUrl,
                         description: item.description,
                         time: item.time,
+                        onTap: () {
+                          context.push('/parking');
+                        },
                       ),
                     ),
                   const SizedBox(height: 10),

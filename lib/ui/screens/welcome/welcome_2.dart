@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/routes/router.dart';
 
-class HomeScreen1 extends StatelessWidget {
+class Welcome2 extends StatelessWidget {
   final String title;
-  const HomeScreen1({super.key, required this.title});
+  const Welcome2({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +104,7 @@ class HomeScreen1 extends StatelessWidget {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  context.go(Routes.homeScreen2);
+                  context.push('/welcome/3');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF407bff),

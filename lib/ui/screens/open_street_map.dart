@@ -70,7 +70,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
         });
         await _fetchRoute();
 
-        _mapController.move(_currentLocation!, 6);
+        _mapController.move(_destination!, 10);
       } else {
         errorMessage('Location not found');
       }
@@ -153,6 +153,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
   @override
   Widget build(BuildContext context) {
     return Stack(
+      clipBehavior: Clip.antiAlias,
       children: [
         FlutterMap(
           mapController: _mapController,

@@ -3,9 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../routes/router.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class Welcome4 extends StatelessWidget {
   final String title;
-  const WelcomeScreen({super.key, required this.title});
+  const Welcome4({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

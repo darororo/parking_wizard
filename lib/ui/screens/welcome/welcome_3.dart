@@ -3,9 +3,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../routes/router.dart';
 
-class HomeScreen2 extends StatelessWidget {
+class Welcome3 extends StatelessWidget {
   final String title;
-  const HomeScreen2({super.key, required this.title});
+  const Welcome3({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class HomeScreen2 extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back_ios),
                       color: Colors.black,
                       onPressed: () {
-                        context.go(Routes.homeScreen1);
+                        context.push('/welcome/4');
                       },
                     ),
                   ),
@@ -105,7 +105,7 @@ class HomeScreen2 extends StatelessWidget {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  context.go(Routes.welcomeScreen);
+                  context.push('/welcome/4');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF407bff),
