@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:math' as math;
+import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_location_marker/flutter_map_location_marker.dart';
 
@@ -57,7 +59,6 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
       'https://nominatim.openstreetmap.org/search?q=$location&format=json&limit=1',
     );
     final response = await http.get(url);
-
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       if (data.isNotEmpty) {
@@ -119,16 +120,14 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
     if (_currentLocation == null || _destination == null) return;
 
     final url = Uri.parse(
-      'http://router.project-osrm.org/route/v1/driving/'
-      '${_currentLocation!.longitude},${_currentLocation!.latitude};'
-      '${_destination!.longitude},${_destination!.latitude}?overview=full&geometries=polyline',
+      "http://router.project-osrm.org/route/v1/driving/${_currentLocation!.longitude},${_currentLocation!.latitude};${_destination!.longitude},${_destination!.latitude}?overview=full&geometries=polyline",
     );
 
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      final geomtry = data['routes'][0]['geometry'];
-      _decodePolyline(geomtry);
+      final geometry = data['routes'][0]['geometry'];
+      _decodePolyline(geometry);
     } else {
       errorMessage('Failed to fetch route.');
     }
@@ -180,7 +179,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
                     width: 50,
                     height: 50,
                     child: Icon(
-                      Icons.location_pin,
+                      Icons.location_on_sharp,
                       size: 40,
                       color: Colors.purple[100],
                     ),
@@ -189,7 +188,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
               ),
             if (_currentLocation != null &&
                 _destination != null &&
-                _route.isEmpty)
+                _route.isNotEmpty)
               PolylineLayer(
                 polylines: [
                   Polyline(points: _route, strokeWidth: 5, color: Colors.red),
