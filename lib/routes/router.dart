@@ -26,6 +26,7 @@ class Routes {
   static const String parkingDetail = '/parking';
 
   static const String welcome1 = '/welcome';
+
   static const String welcome2 = '/welcome';
   static const String welcomeScreen = '/welcome';
 
@@ -34,64 +35,61 @@ class Routes {
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: Routes.home,
+  // initialLocation: Routes.home,
+  initialLocation: Routes.welcome1, // This makes welcome1 the first screen
   routes: [
+    GoRoute(
+      path: '/welcome',
+      builder: (context, state) => const Welcome1(title: 'welcome 1'),
+      routes: [
+        GoRoute(
+          path: '2',
+          builder: (context, state) => const Welcome2(title: 'welcome 2'),
+        ),
+        GoRoute(
+          path: '3',
+          builder: (context, state) => const Welcome3(title: 'welcome 3'),
+        ),
+        GoRoute(
+          path: '4',
+          builder: (context, state) => const Welcome4(title: 'welcome 4'),
+        ),
+      ],
+    ),
+
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) =>
           LayoutShell(navigationShell: navigationShell),
       branches: [
-        // // Welcome Branch
-        // StatefulShellBranch(
-        //   routes: [
-        //     GoRoute(
-        //       path: '/welcome',
-        //       builder: (context, state) => const Welcome1(title: 'Home Screen'),
-        //       routes: [
-        //         GoRoute(
-        //           path: '2',
-        //           builder: (context, state) =>
-        //               const Welcome2(title: 'Home Screen 1'),
-        //         ),
-        //         GoRoute(
-        //           path: '3',
-        //           builder: (context, state) =>
-        //               const Welcome3(title: 'Home Screen 1'),
-        //         ),
-        //         GoRoute(
-        //           path: '4',
-        //           builder: (context, state) => const Welcome4(title: 'title'),
-        //         ),
-        //       ],
-        //     ),
-        //   ],
-        // ),
-
-        // Home Branch
         StatefulShellBranch(
           routes: [
             GoRoute(
+              // path: '/welcome',
               path: Routes.home,
+              // builder: (context, state) => const Welcome1(title: 'Home Screen'),
               builder: (context, state) =>
                   const HomeScreen(title: 'Home Screen'),
             ),
           ],
         ),
-        // Save Branch
+
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: Routes.save,
-              builder: (context, state) => const SaveScreen(title: 'Save'),
+              // builder: (context, state) => const Welcome1(title: 'Home Screen'),
+              builder: (context, state) =>
+                  const SaveScreen(title: 'Save Screen'),
             ),
           ],
         ),
-        // History Branch
+
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: Routes.history,
               builder: (context, state) =>
-                  const HistoryScreen(title: 'Parking History'),
+                  const HistoryScreen(title: 'History Screen'),
               routes: [
                 GoRoute(
                   path: Routes.parkingDetail,
@@ -106,16 +104,15 @@ final router = GoRouter(
             ),
           ],
         ),
-        // Settings Branch
+
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: Routes.settings,
               builder: (context, state) => const SettingScreen(),
               routes: [
-                // Nested language route under settings
                 GoRoute(
-                  path: 'language',
+                  path: Routes.language,
                   builder: (context, state) => const LanguageScreen(),
                 ),
               ],

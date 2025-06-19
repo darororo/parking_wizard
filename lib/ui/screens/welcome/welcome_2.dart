@@ -41,7 +41,7 @@ class Welcome2 extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back_ios),
                       color: Colors.black,
                       onPressed: () {
-                        context.go(Routes.home);
+                        context.go(Routes.welcome1);
                       },
                     ),
                   ),

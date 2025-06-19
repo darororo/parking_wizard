@@ -42,7 +42,7 @@ class Welcome3 extends StatelessWidget {
                       icon: const Icon(Icons.arrow_back_ios),
                       color: Colors.black,
                       onPressed: () {
-                        context.push('/welcome/4');
+                        context.push('/welcome/2');
                       },
                     ),
                   ),

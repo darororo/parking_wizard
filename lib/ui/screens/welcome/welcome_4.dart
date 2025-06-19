@@ -88,7 +88,8 @@ class Welcome4 extends StatelessWidget {
               height: 55,
               child: ElevatedButton(
                 onPressed: () {
-                  context.go(Routes.home);
+                  // context.go(Routes.home);
+                  context.go('/home');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF407bff),
