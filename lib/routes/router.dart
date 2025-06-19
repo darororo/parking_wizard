@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/ui/layouts/layout_shell.dart';
 import 'package:parking_wizard/ui/screens/history_screen.dart';
 import 'package:parking_wizard/ui/screens/home_screen/home_screen.dart';
+import 'package:parking_wizard/ui/screens/parking/create_parking.dart';
 import 'package:parking_wizard/ui/screens/welcome/home_screen1.dart';
 import 'package:parking_wizard/ui/screens/welcome/home_screen2.dart';
 import 'package:parking_wizard/ui/screens/welcome/welcome_screen.dart';
@@ -23,6 +24,8 @@ class Routes {
   static const String homeScreen1 = '/home1';
   static const String homeScreen2 = '/home2';
   static const String welcomeScreen = '/welcome';
+
+  static const String parkingCreate = '/parking/create';
 }
 
 final router = GoRouter(
@@ -90,6 +93,15 @@ final router = GoRouter(
                   builder: (context, state) => const LanguageScreen(),
                 ),
               ],
+            ),
+          ],
+        ),
+
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.parkingCreate,
+              builder: (context, state) => const CreateParking(),
             ),
           ],
         ),
