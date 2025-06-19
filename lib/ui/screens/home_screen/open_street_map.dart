@@ -101,6 +101,10 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
   }
 
   Future<void> _userCurrentLocation() async {
+    if (_currentLocation == null) {
+      _initLocation();
+    }
+
     if (_currentLocation != null) {
       _mapController.move(_currentLocation!, 15);
     } else {
