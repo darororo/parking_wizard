@@ -46,7 +46,6 @@ dependencies:
   flutter_polyline_points: ^2.1.0
   latlong2: ^0.9.1
   flutter_map_location_marker: ^10.1.0
-  # flutter_svg: ^2.1.0
 
 dev_dependencies:
   flutter_test:

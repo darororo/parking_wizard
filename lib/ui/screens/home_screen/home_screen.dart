@@ -48,7 +48,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      body: OpenStreetMapWidget(),
+      body: Stack(children: [OpenStreetMapWidget()]),
     );
   }
 }
