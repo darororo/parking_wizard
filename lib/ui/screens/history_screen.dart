@@ -116,19 +116,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             fontFamily: 'Montserrat',
           ),
         ),
-        leading: Padding(
-          padding: const EdgeInsets.only(left: 6),
-          child: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new_sharp,
-              color: Colors.black,
-              size: 20,
-            ),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        ),
+
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.white,

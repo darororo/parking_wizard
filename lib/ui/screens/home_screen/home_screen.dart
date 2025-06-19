@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:parking_wizard/providers/home_screen/parking_bottom_sheet_provider.dart';
+import 'package:parking_wizard/common/providers/home_screen/parking_bottom_sheet_provider.dart';
 import 'package:parking_wizard/ui/screens/home_screen/open_street_map.dart';
 import 'package:parking_wizard/ui/screens/home_screen/widgets/cat_bottom_sheet.dart';
 

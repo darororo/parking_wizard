@@ -48,7 +48,7 @@ class LayoutShell extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: () {
-          // Handle center action here
+          return navigationShell.goBranch(4);
         },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
-import 'package:parking_wizard/models/map_location.dart';
+import 'package:parking_wizard/common/models/map_location.dart';
 
 class MapLocationNotifier extends StateNotifier<MapLocation> {
   MapLocationNotifier()
