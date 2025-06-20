@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/ui/widgets/history/parking_item_widget.dart';
+import 'package:parking_wizard/ui/widgets/datefilter.dart';
 
 class ParkingHistoryItem {
   final String dateLabel;
@@ -229,17 +230,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
               ),
               onPressed: () async {
-                final DateTime? dateTime = await showDatePicker(
+                showDialog(
                   context: context,
-                  initialDate: selectedDate,
-                  firstDate: DateTime(2000),
-                  lastDate: DateTime(2050),
+                  builder: (context) => CustomDatePickerDialog(
+                    initialDate: selectedDate,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2050),
+                    onDateSelected: (DateTime newDate) {
+                      setState(() {
+                        selectedDate = newDate;
+                      });
+                    },
+                  ),
                 );
-                if (dateTime != null) {
-                  setState(() {
-                    selectedDate = dateTime;
-                  });
-                }
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
