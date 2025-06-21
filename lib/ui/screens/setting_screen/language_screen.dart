@@ -254,19 +254,19 @@ class _LanguageScreenState extends State<LanguageScreen> {
                             color: Colors.black87,
                           ),
                         ),
-                        Spacer(),
-                        Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Icon(
-                            Icons.check,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                        ),
+                        // Spacer(),
+                        // Container(
+                        //   padding: EdgeInsets.all(4),
+                        //   decoration: BoxDecoration(
+                        //     color: Colors.blue,
+                        //     borderRadius: BorderRadius.circular(4),
+                        //   ),
+                        //   child: Icon(
+                        //     Icons.check,
+                        //     color: Colors.white,
+                        //     size: 16,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
