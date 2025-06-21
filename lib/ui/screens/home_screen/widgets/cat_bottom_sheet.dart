@@ -6,7 +6,13 @@ class CatBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFFFFFFF),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+      ),
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
       width: double.infinity,
       child: Column(
@@ -16,13 +22,17 @@ class CatBottomSheet extends StatelessWidget {
             children: [
               const Text(
                 'Your Location',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                  fontFamily: 'Montserrat',
+                ),
               ),
               Stack(
                 alignment: Alignment.center,
                 children: [
                   Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: Color(0xFFBEBEBE),
                     ),
@@ -35,7 +45,7 @@ class CatBottomSheet extends StatelessWidget {
                     },
                     icon: const Icon(
                       Icons.close_rounded,
-                      color: Color(0xFFFFFFFF),
+                      color: Colors.white,
                       size: 24,
                     ),
                   ),
@@ -46,17 +56,30 @@ class CatBottomSheet extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Institute of Family Guy',
-              style: TextStyle(color: Colors.grey.shade600),
+              'Phnom Penh City Parking Station',
+              style: TextStyle(
+                fontSize: 13,
+                color: Color(0xFF333333),
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
 
-          Spacer(),
+          const Spacer(),
 
           Image.asset('assets/png/cat-sleep.png', width: 256),
-          Text('No Parked Vehicle Currently'),
+          const Text(
+            'No Parked Vehicle Currently',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              fontFamily: 'Montserrat',
+            ),
+          ),
 
-          // Button
+          const SizedBox(height: 30),
+
           Row(
             children: [
               Expanded(
@@ -65,8 +88,19 @@ class CatBottomSheet extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.blue.shade400,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text("Start Parking Now"),
+                  child: const Text(
+                    "Start Parking Now",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Montserrat',
+                    ),
+                  ),
                 ),
               ),
             ],
