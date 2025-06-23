@@ -16,7 +16,7 @@ class CreateParkingScreen extends StatefulWidget {
 class _CreateParkingScreenState extends State<CreateParkingScreen> {
   final TextEditingController _notesController = TextEditingController();
   String _selectedLocation = "Balaşılır amaniam Salai"; // Default location
-  List<String> _imagePaths = [];
+  final List<String> _imagePaths = [];
   Position? _currentPosition;
   bool _isLoadingLocation = true;
 
@@ -111,34 +111,7 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
               ),
             ),
 
-            // Location Dropdown
-            DropdownButtonFormField<String>(
-              value: _selectedLocation,
-              items: [
-                "Balaşılır amaniam Salai",
-                "Kamarajar Salai",
-                "85th Street",
-                "88th Avenue",
-                "16th Avenue"
-              ].map((location) {
-                return DropdownMenuItem(
-                  value: location,
-                  child: Text(location),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() => _selectedLocation = value!);
-              },
-              decoration: InputDecoration(
-                labelText: 'Parking Location',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Take Photo Button
+           
             ElevatedButton(
               onPressed: _takePhoto,
               style: ElevatedButton.styleFrom(

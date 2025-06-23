@@ -218,6 +218,7 @@ class _LanguageScreenState extends State<LanguageScreen> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
+                    // ignore: deprecated_member_use
                     color: Colors.black.withOpacity(0.14),
                     blurRadius: 8,
                     offset: Offset(0, 3),

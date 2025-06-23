@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../routes/router.dart';
 
 class Welcome4 extends StatelessWidget {
   final String title;

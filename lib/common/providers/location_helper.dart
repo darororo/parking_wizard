@@ -24,7 +24,6 @@ class LocationHelper {
 
       return true; // Permission granted
     } catch (e) {
-      print("Error requesting location permission: $e");
       return false;
     }
   }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:parking_wizard/routes/router.dart';
 
 class Welcome1 extends StatelessWidget {
   final String title;

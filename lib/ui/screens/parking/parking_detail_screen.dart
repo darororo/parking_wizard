@@ -4,7 +4,6 @@ import 'package:parking_wizard/common/models/parking_model.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
 // TODO: Replace the import below with the correct path if different
-import 'package:parking_wizard/ui/screens/open_street_map.dart';
 // Make sure that the OpenStreetMap widget is defined in the imported file.
 // If OpenStreetMap is not defined, define it as a widget or replace it with a valid widget.
 

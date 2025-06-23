@@ -6,23 +6,21 @@ class LanguageListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int _selectedIndex = 1;
-
     final List<Map<String, String>> languages = [
       {'flag': '🇰🇭', 'name': 'Khmer', 'region': 'Cambodia'},
       {'flag': '🇬🇧', 'name': 'English', 'region': 'UK'},
     ];
 
     return ListView(
-      children: [
-        LanguageTile(
-          flag: 'ABC',
-          name: 'ABC',
-          region: 'ABC',
+      children: languages.map((lang) {
+        return LanguageTile(
+          flag: lang['flag'] ?? '',
+          name: lang['name'] ?? '',
+          region: lang['region'] ?? '',
           selected: false,
           onTap: () {},
-        ),
-      ],
+        );
+      }).toList(),
     );
   }
 }
