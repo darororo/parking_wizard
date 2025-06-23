@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:parking_wizard/common/models/parking_model.dart';
-import 'package:parking_wizard/ui/screens/home_screen/home_screen.dart';
+import 'package:iconify_flutter/icons/ic.dart';
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
@@ -28,7 +26,7 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
 
   Future<void> _getCurrentLocation() async {
     setState(() => _isLoadingLocation = true);
-    
+
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -41,7 +39,7 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission != LocationPermission.whileInUse && 
+        if (permission != LocationPermission.whileInUse &&
             permission != LocationPermission.always) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Location permissions are denied")),
@@ -66,213 +64,170 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Save Parking',
-          style: TextStyle(
-            fontFamily: 'Montserrat',
-            fontWeight: FontWeight.w600,
+      appBar: AppBar(title: Text('Save Parking')),
+      body: Column(
+        children: [
+          Container(
+            clipBehavior: Clip.antiAlias,
+            margin: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              border: BoxBorder.all(),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            height: MediaQuery.sizeOf(context).height * 0.25,
+            child: OpenStreetMapWidget(),
           ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Current Location Status
-            if (_isLoadingLocation)
-              const LinearProgressIndicator()
-            else if (_currentPosition == null)
-              Text(
-                "Location not available",
-                style: TextStyle(
-                  color: Colors.red[400],
-                  fontFamily: 'Montserrat',
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Vehicle Photo Preview',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Montserrat',
+                  ),
                 ),
-              ),
-            const SizedBox(height: 10),
-
-            // Map Container
-            Container(
-              clipBehavior: Clip.antiAlias,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                border: Border.all(),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              height: MediaQuery.sizeOf(context).height * 0.25,
-              child: OpenStreetMapWidget(
-                currentLocation: _currentPosition,
-                onLocationSelected: (location) {
-                  setState(() => _selectedLocation = location);
-                },
-              ),
-            ),
-
-           
-            ElevatedButton(
-              onPressed: _takePhoto,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.blue.shade400,
-                backgroundColor: Colors.white,
-                side: BorderSide(color: Colors.blue.shade400),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Text(
-                "Take Photo",
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w200,
-                  fontFamily: 'Montserrat',
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Vehicle Photo Preview
-            Container(
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: _imagePaths.isNotEmpty
-                  ? ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: _imagePaths.length,
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Image.file(File(_imagePaths[index])),
-                        );
-                      },
-                    )
-                  : const Center(
-                      child: Text(
-                        "Vehicle Photo Preview",
-                        style: TextStyle(
+                TextButton(
+                  onPressed: () {},
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      side: BorderSide(color: Colors.black),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Take Photo',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w500,
                           color: Colors.grey,
                           fontFamily: 'Montserrat',
                         ),
                       ),
+                      SizedBox(width: 8),
+                      Icon(Icons.camera_alt_outlined),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: SizedBox(
+              height: 220,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildImage(
+                      'https://i.pinimg.com/736x/cb/38/6a/cb386ad02edb00c831e32643b2e7f306.jpg',
                     ),
-            ),
-            const SizedBox(height: 20),
-
-            // Notes Section
-            const Text(
-              "Notes",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'Montserrat',
+                    const SizedBox(width: 12),
+                    _buildImage(
+                      'https://i.pinimg.com/736x/ec/e0/6e/ece06e300e3a809becbdb651d8d49299.jpg',
+                    ),
+                    const SizedBox(width: 12),
+                    _buildImage(
+                      'https://i.pinimg.com/736x/65/ae/db/65aedb82a3de3584fbba370c0a2f80a4.jpg',
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 10),
-            Text(
-              "Time ${DateFormat('h:mm a').format(DateTime.now())}",
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-                fontFamily: 'Montserrat',
-              ),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Notes',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Montserrat',
+                  ),
+                ),
+                Text(
+                  'Time: 6:44 PM',
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey,
+                    fontFamily: 'Montserrat',
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: _notesController,
+          ),
+          SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: TextField(
+              maxLines: null,
               decoration: InputDecoration(
-                hintText: "Type Something...",
+                labelText: 'Add a note about the parking',
+                hintText: 'E.g., Level 2, near the elevator',
+                labelStyle: TextStyle(color: Colors.grey, fontSize: 12),
+                hintStyle: TextStyle(color: Colors.grey, fontSize: 12),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                contentPadding: const EdgeInsets.all(16),
-              ),
-              maxLines: 3,
-            ),
-            const SizedBox(height: 30),
-
-            // Save Parking Button
-            ElevatedButton(
-              onPressed: _saveParking,
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor: Colors.blue.shade400,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
-              ),
-              child: const Text(
-                "Save Parking",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'Montserrat',
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: BorderSide(color: Colors.grey),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: TextButton(
+                onPressed: () {},
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(32),
+                  ),
+                ),
+                child: Text(
+                  'Save Parking',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                    fontFamily: 'Monserrat',
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Future<void> _takePhoto() async {
-    // Implement camera functionality
-    // final image = await ImagePicker().pickImage(source: ImageSource.camera);
-    // if (image != null) {
-    //   setState(() {
-    //     _imagePaths.add(image.path);
-    //   });
-    // }
-  }
-
-  void _saveParking() {
-    if (_selectedLocation.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a location")),
-      );
-      return;
-    }
-
-    if (_currentPosition == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Current location not available")),
-      );
-      return;
-    }
-
-    final parkingSpot = ParkingSpot(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: 'Parking at $_selectedLocation',
-      description: _notesController.text,
-      location: _selectedLocation,
-      notes: _notesController.text,
-      parkingTime: DateTime.now(),
-      imageUrls: _imagePaths,
-      currentPosition: _currentPosition,
+  Widget _buildImage(String url) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10.0),
+      child: Image.network(url, height: 220, width: 320, fit: BoxFit.cover),
     );
-
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          title: 'Parking Wizard',
-          parkingSpot: parkingSpot,
-        ),
-      ),
-      (route) => false,
-    );
-  }
-
-  @override
-  void dispose() {
-    _notesController.dispose();
-    super.dispose();
   }
 }
