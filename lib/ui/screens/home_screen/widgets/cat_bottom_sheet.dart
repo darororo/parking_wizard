@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:parking_wizard/ui/screens/parking/create_parking.dart';
+// Make sure the CreateParking class exists in create_parking.dart and is exported.
 
 class CatBottomSheet extends StatelessWidget {
   const CatBottomSheet({super.key});
@@ -84,7 +86,15 @@ class CatBottomSheet extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Close the bottom sheet first if needed
+                    Navigator.of(context).pop();
+                    // Navigate to CreateParking screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const CreateParkingScreen()),
+                    );
+                  },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
                     backgroundColor: Colors.blue.shade400,

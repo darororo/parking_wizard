@@ -7,7 +7,7 @@ class MapLocationNotifier extends StateNotifier<MapLocation> {
   MapLocationNotifier()
     : super(
         MapLocation(
-          location: Location(),
+          locationData: LocationData.fromMap({}),
           currentLocation: null,
           destination: null,
           route: [],

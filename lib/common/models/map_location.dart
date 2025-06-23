@@ -3,14 +3,14 @@ import 'package:location/location.dart';
 
 class MapLocation {
   const MapLocation({
-    required this.location,
+    required this.locationData,
     required this.currentLocation,
     required this.destination,
     required this.route,
     this.isLoading = true,
   });
 
-  final Location location;
+  final LocationData locationData;
   final bool isLoading;
   final LatLng? currentLocation;
   final LatLng? destination;
