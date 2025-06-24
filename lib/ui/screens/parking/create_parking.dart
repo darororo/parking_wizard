@@ -16,7 +16,7 @@ class CreateParkingScreen extends StatefulWidget {
 class _CreateParkingScreenState extends State<CreateParkingScreen> {
   final TextEditingController _notesController = TextEditingController();
   String _selectedLocation = "Balaşılır amaniam Salai"; // Default location
-  final List<String> _imagePaths = [];
+  List<String> _imagePaths = [];
   Position? _currentPosition;
   bool _isLoadingLocation = true;
 

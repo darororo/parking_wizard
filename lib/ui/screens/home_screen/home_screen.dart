@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
+import 'package:parking_wizard/common/providers/home_screen/parking_bottom_sheet_provider.dart';
 import 'package:parking_wizard/ui/screens/home_screen/widgets/cat_bottom_sheet.dart';
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
 import 'package:parking_wizard/ui/screens/parking/create_parking.dart';
@@ -25,7 +26,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   Position? _currentPosition;
-  final List<ParkingSpot> _parkingSpots = [];
+  List<ParkingSpot> _parkingSpots = [];
 
   @override
   void initState() {
@@ -165,6 +166,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final toggleParkingBottomSheet = ref.watch(parkingBottomSheetProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -200,24 +203,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Map showing current and parking locations
-          Expanded(
-            flex: 2,
-            child: OpenStreetMapWidget(
-              currentLocation: _currentPosition,
-              parkingLocation: widget.parkingSpot?.location,
-            ),
-          ),
-
-          // Parking info section
-          if (widget.parkingSpot != null) _buildParkingInfo(),
-
-          // Parking spots list
-          
-        ],
-      ),
+     
       floatingActionButton: FloatingActionButton(
         onPressed: _handleLocationPermission,
         child: const Icon(Icons.location_searching),
