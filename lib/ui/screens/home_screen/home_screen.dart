@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
 import 'package:parking_wizard/common/providers/home_screen/parking_bottom_sheet_provider.dart';
+import 'package:parking_wizard/ui/screens/directions_bottomsheet/directions_bottomsheet.dart';
 import 'package:parking_wizard/ui/screens/home_screen/widgets/cat_bottom_sheet.dart';
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
 import 'package:parking_wizard/ui/screens/parking/create_parking.dart';
@@ -40,7 +41,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _openBottomSheet() {
     showModalBottomSheet(
       context: context,
-      builder: (ctx) => const CatBottomSheet(),
+      builder: (ctx) => const Directions(),
     );
   }
 
