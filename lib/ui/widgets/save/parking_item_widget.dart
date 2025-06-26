@@ -1,3 +1,4 @@
+import 'dart:io';
 import "package:flutter/material.dart";
 
 class ParkingItemWidget extends StatelessWidget {
@@ -15,6 +16,7 @@ class ParkingItemWidget extends StatelessWidget {
   final String description;
   final String time;
   final VoidCallback onTap;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -41,12 +43,19 @@ class ParkingItemWidget extends StatelessWidget {
             padding: const EdgeInsets.all(10),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                imgUrl,
-                height: 130,
-                width: 150,
-                fit: BoxFit.cover,
-              ),
+              child: (imgUrl.startsWith('http') || imgUrl.startsWith('https'))
+                  ? Image.network(
+                      imgUrl,
+                      height: 130,
+                      width: 150,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.file(
+                      File(imgUrl),
+                      height: 130,
+                      width: 150,
+                      fit: BoxFit.cover,
+                    ),
             ),
           ),
           const SizedBox(width: 2),
@@ -109,7 +118,6 @@ class ParkingItemWidget extends StatelessWidget {
                   // time and more details
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    // crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 16),

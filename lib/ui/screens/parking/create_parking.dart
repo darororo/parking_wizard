@@ -1,6 +1,3 @@
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:go_router/go_router.dart';
 import 'package:iconify_flutter/icons/ic.dart';
 import 'package:parking_wizard/common/enums/parking_status.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
@@ -10,6 +7,12 @@ import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart'; // Add this import
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
+import 'package:parking_wizard/common/enums/parking_status.dart';
+import 'package:parking_wizard/common/models/parking_model.dart';
+import 'package:parking_wizard/common/service/parking_service.dart';
 
 class CreateParkingScreen extends StatefulWidget {
   const CreateParkingScreen({super.key});
@@ -26,6 +29,11 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
   final TextEditingController _notesController = TextEditingController();
   String _selectedLocation = "Balaşılır amaniam Salai"; // Default location
   final List<String> _imagePaths = [];
+
+  // crud
+  final ParkingService _databaseService = ParkingService.instance;
+  String? _notesText = '';
+
   Position? _currentPosition;
   bool _isLoadingLocation = true;
 
@@ -383,9 +391,11 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: TextFormField(
+                  //crud
                   onChanged: (value) {
                     _notesText = value;
                   },
+
                   maxLines: null,
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
@@ -421,6 +431,8 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
               width: double.infinity,
               height: 56,
               child: TextButton(
+                // onPressed: () {},
+                // crud
                 onPressed: () async {
                   final spot = ParkingSpot(
                     location: _selectedLocation,
@@ -431,10 +443,7 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
                         .toList(),
                   );
 
-                  await _databaseService.clearAllParkings();
                   await _databaseService.createParking(spot);
-
-                  // await _databaseService.clearAllParkings();
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Parking saved!')),
