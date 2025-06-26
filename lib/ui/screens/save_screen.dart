@@ -36,6 +36,18 @@ class SaveScreen extends StatefulWidget {
 class _SaveScreenState extends State<SaveScreen> {
   final ParkingService _databaseService = ParkingService.instance;
 
+  late Future<List<ParkingSpot>> _parkingFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadParking(); // Initial load
+  }
+
+  void _loadParking() {
+    _parkingFuture = _databaseService.getParking();
+  }
+
   final List<SaveScreenItem> _save = [
     SaveScreenItem(
       dateLabel: "Today",
@@ -126,7 +138,7 @@ class _SaveScreenState extends State<SaveScreen> {
 
   Widget _parkingList() {
     return FutureBuilder<List<ParkingSpot>>(
-      future: _databaseService.getParking(), // You need to implement this
+      future: _parkingFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -142,25 +154,54 @@ class _SaveScreenState extends State<SaveScreen> {
           itemCount: spots.length,
           itemBuilder: (context, index) {
             final spot = spots[index];
-            return ListTile(
-              leading: (spot.imageUrls != null && spot.imageUrls.isNotEmpty)
-                  ? spot.imageUrls[0].startsWith('http')
-                        ? Image.network(
-                            spot.imageUrls[0],
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.file(
-                            File(spot.imageUrls[0]),
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover,
-                          )
-                  : const Icon(Icons.local_parking),
-              title: Text(spot.title),
-              subtitle: Text(spot.notes),
-              trailing: Text(spot.parkingTime.toLocal().toString()),
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      spot.title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(spot.notes),
+                    const SizedBox(height: 12),
+                    if (spot.imageUrls.isNotEmpty)
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: spot.imageUrls.map((url) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: url.startsWith('http')
+                                ? Image.network(
+                                    url,
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.file(
+                                    File(url),
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  ),
+                          );
+                        }).toList(),
+                      ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Parked at: ${spot.parkingTime.toLocal()}',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
             );
           },
         );
