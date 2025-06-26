@@ -1,10 +1,12 @@
 import 'package:parking_wizard/common/enums/parking_status.dart';
 import 'package:geolocator/geolocator.dart';
+import 'dart:convert';
 
 class ParkingSpot {
-  final String id;
+  static int _idCounter = 0; // static counter for IDs
+
+  final int? id;
   final String title;
-  final String description;
   final String location;
   final String notes;
   final DateTime parkingTime;
@@ -15,9 +17,8 @@ class ParkingSpot {
   final Position? currentPosition;
 
   ParkingSpot({
-    required this.id,
-    required this.title,
-    required this.description,
+    this.id,
+    String? title,
     required this.location,
     required this.notes,
     required this.parkingTime,
@@ -26,17 +27,18 @@ class ParkingSpot {
     this.latitude,
     this.longitude,
     this.currentPosition,
-  }) : status = status ?? ParkingStatus.values.first;
+  }) : status = status ?? ParkingStatus.values.first,
+       title = title ?? 'My Vehicle ${id ?? ++_idCounter}';
 
   factory ParkingSpot.fromMap(Map<String, dynamic> map) {
     return ParkingSpot(
-      id: map['id'] ?? '',
-      title: map['title'] ?? '',
-      description: map['description'] ?? '',
+      id: map['id'] as int?,
       location: map['location'] ?? '',
       notes: map['notes'] ?? '',
       parkingTime: DateTime.parse(map['parkingTime']),
-      imageUrls: List<String>.from(map['imageUrls'] ?? []),
+      imageUrls: map['imageUrls'] != null
+          ? List<String>.from(jsonDecode(map['imageUrls']))
+          : [],
       status: ParkingStatus.values[map['status'] ?? 0],
       latitude: map['latitude'],
       longitude: map['longitude'],
@@ -44,17 +46,22 @@ class ParkingSpot {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
+    final map = <String, dynamic>{
       'title': title,
-      'description': description,
       'location': location,
       'notes': notes,
       'parkingTime': parkingTime.toIso8601String(),
-      'imageUrls': imageUrls,
+      'imageUrls': jsonEncode(imageUrls),
       'status': status.index,
       'latitude': latitude,
       'longitude': longitude,
     };
+
+    // Only include id when updating (not needed on insert)
+    if (id != null) {
+      map['id'] = id;
+    }
+
+    return map;
   }
 }

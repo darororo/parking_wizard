@@ -3,6 +3,12 @@ import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/ui/widgets/save/parking_item_widget.dart';
 import 'package:parking_wizard/ui/widgets/datefilter.dart';
 
+// crud
+import 'dart:io';
+import 'package:parking_wizard/common/models/parking_model.dart';
+import 'package:parking_wizard/common/service/parking_service.dart';
+import 'package:intl/intl.dart'; // Add this import for date formatting
+
 class SaveScreenItem {
   final String dateLabel;
   final String title;
@@ -28,32 +34,62 @@ class SaveScreen extends StatefulWidget {
 }
 
 class _SaveScreenState extends State<SaveScreen> {
-  final List<SaveScreenItem> _save = [
-    SaveScreenItem(
-      dateLabel: "Today",
-      title: "GT2 RS",
-      imgUrl:
-          "https://i.pinimg.com/736x/36/04/24/36042426ea56fa94687ea684705043d1.jpg",
-      description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-      time: "7:00 AM",
-    ),
-    SaveScreenItem(
-      dateLabel: "Today",
-      title: "GT3 RS",
-      imgUrl:
-          "https://i.pinimg.com/736x/57/70/60/57706026cec1428ff595f215655f2a86.jpg",
-      description:
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-      time: "12:00 PM",
-    ),
-  ];
-  // group item by date
-  Map<String, List<SaveScreenItem>> get _groupedHistory {
+  // crud
+  final ParkingService _databaseService = ParkingService.instance;
+  late Future<List<ParkingSpot>> _parkingFuture;
+  DateTime selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadParking(); // Initial load
+  }
+
+  void _loadParking() {
+    _parkingFuture = _databaseService.getParking();
+  }
+
+  // Convert ParkingSpot to SaveScreenItem and group by date
+  Map<String, List<SaveScreenItem>> _groupParkingSpotsByDate(
+    List<ParkingSpot> spots,
+  ) {
     final Map<String, List<SaveScreenItem>> map = {};
-    for (var item in _save) {
-      map.putIfAbsent(item.dateLabel, () => []).add(item);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    for (var spot in spots) {
+      final spotDate = DateTime(
+        spot.parkingTime.year,
+        spot.parkingTime.month,
+        spot.parkingTime.day,
+      );
+
+      String dateLabel;
+      if (spotDate.isAtSameMomentAs(today)) {
+        dateLabel = "Today";
+      } else if (spotDate.isAtSameMomentAs(yesterday)) {
+        dateLabel = "Yesterday";
+      } else {
+        dateLabel = DateFormat('MMM dd, yyyy').format(spotDate);
+      }
+
+      final item = SaveScreenItem(
+        dateLabel: dateLabel,
+        title: spot.title,
+        imgUrl: spot.imageUrls.isNotEmpty ? spot.imageUrls.first : '',
+        description: spot.notes,
+        time: DateFormat('h:mm a').format(spot.parkingTime),
+      );
+
+      map.putIfAbsent(dateLabel, () => []).add(item);
     }
+
+    // Sort each group by time (most recent first)
+    map.forEach((key, value) {
+      value.sort((a, b) => b.time.compareTo(a.time));
+    });
+
     return map;
   }
 
@@ -73,7 +109,6 @@ class _SaveScreenState extends State<SaveScreen> {
             fontFamily: 'Montserrat',
           ),
         ),
-
         backgroundColor: Colors.white,
       ),
       backgroundColor: Colors.white,
@@ -83,32 +118,94 @@ class _SaveScreenState extends State<SaveScreen> {
             padding: const EdgeInsets.only(bottom: 10),
             child: filterButtonWidget(),
           ),
-          Expanded(
-            child: ListView(
-              addAutomaticKeepAlives: false,
-              children: [
-                for (var entry in _groupedHistory.entries) ...[
-                  dateLabelWidget(entry.key),
-                  for (var item in entry.value)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: ParkingItemWidget(
-                        title: item.title,
-                        imgUrl: item.imgUrl,
-                        description: item.description,
-                        time: item.time,
-                        onTap: () {
-                          context.push('/parking');
-                        },
-                      ),
-                    ),
-                  const SizedBox(height: 10),
-                ],
-              ],
-            ),
-          ),
+          Expanded(child: _parkingList()),
         ],
       ),
+    );
+  }
+
+  Widget _parkingList() {
+    return FutureBuilder<List<ParkingSpot>>(
+      future: _parkingFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.local_parking_outlined,
+                  size: 64,
+                  color: Colors.grey,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'No parking spots saved.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                    fontFamily: 'Montserrat',
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        final spots = snapshot.data!;
+        final groupedHistory = _groupParkingSpotsByDate(spots);
+
+        if (groupedHistory.isEmpty) {
+          return const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.local_parking_outlined,
+                  size: 64,
+                  color: Colors.grey,
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'No parking spots saved.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                    fontFamily: 'Montserrat',
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView(
+          addAutomaticKeepAlives: false,
+          children: [
+            for (var entry in groupedHistory.entries) ...[
+              dateLabelWidget(entry.key),
+              for (var item in entry.value)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: ParkingItemWidget(
+                    title: item.title,
+                    imgUrl: item.imgUrl,
+                    description: item.description,
+                    time: item.time,
+                    onTap: () {
+                      context.push('/parking');
+                    },
+                  ),
+                ),
+              const SizedBox(height: 10),
+            ],
+          ],
+        );
+      },
     );
   }
 
@@ -117,14 +214,14 @@ class _SaveScreenState extends State<SaveScreen> {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(left: 16),
+          padding: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
           child: Text(
             dateLabel,
             style: TextStyle(
               fontFamily: 'Montserrat',
-              fontSize: 12,
+              fontSize: 14,
               color: Colors.grey.shade700,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -133,16 +230,14 @@ class _SaveScreenState extends State<SaveScreen> {
   }
 
   Row filterButtonWidget() {
-    // DateTime selectedDate = DateTime.now();
-    DateTime selectedDate = DateTime.now();
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Padding(
-          padding: const EdgeInsets.only(right: 16.0),
+          padding: const EdgeInsets.only(right: 16.0, top: 8.0),
           child: SizedBox(
             width: 120,
-            height: 36,
+            height: 38,
             child: OutlinedButton(
               style: OutlinedButton.styleFrom(
                 foregroundColor: Colors.black,
@@ -162,15 +257,17 @@ class _SaveScreenState extends State<SaveScreen> {
                     onDateSelected: (DateTime newDate) {
                       setState(() {
                         selectedDate = newDate;
+                        // Optionally filter the results based on selected date
+                        _loadParking(); // Reload data if needed
                       });
                     },
                   ),
                 );
               },
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'Filter dates',
                     style: TextStyle(
                       fontFamily: 'Montserrat',
@@ -178,8 +275,8 @@ class _SaveScreenState extends State<SaveScreen> {
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  const Icon(Icons.filter_list, size: 18, color: Colors.black),
+                  SizedBox(width: 6),
+                  Icon(Icons.filter_list, size: 16, color: Colors.black),
                 ],
               ),
             ),
