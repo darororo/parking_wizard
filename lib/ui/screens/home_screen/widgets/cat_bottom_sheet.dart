@@ -92,12 +92,14 @@ class CatBottomSheet extends StatelessWidget {
                     // Navigate to CreateParking screen
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const CreateParkingScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const CreateParkingScreen(),
+                      ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: Colors.blue.shade400,
+                    backgroundColor: Color(0xFF407BFF),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

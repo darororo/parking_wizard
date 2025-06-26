@@ -51,5 +51,11 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+
+		<!-- request permission ios -->
+		<key>NSCameraUsageDescription</key>
+		<string>Need camera access to take photos</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Need gallery access to select photos</string>
 	</dict>
 </plist>

@@ -11,7 +11,7 @@ class OpenStreetMapWidget extends StatefulWidget {
   final Position? currentLocation;
   final String? parkingLocation;
   final Function(String)? onLocationSelected;
-  
+
   const OpenStreetMapWidget({
     super.key,
     this.currentLocation,
@@ -84,7 +84,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
         'https://nominatim.openstreetmap.org/search?q=$location&format=json&limit=1',
       );
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data.isNotEmpty) {
@@ -139,9 +139,9 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
   }
 
   void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _fetchRoute() async {
@@ -209,7 +209,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.example.parking_wizard',
             ),
-            
+
             // Current Location Marker
             if (_currentLatLng != null)
               MarkerLayer(
@@ -218,11 +218,15 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
                     point: _currentLatLng!,
                     width: 40,
                     height: 40,
-                    child: const Icon(Icons.person_pin_circle, color: Colors.blue, size: 40),
+                    child: const Icon(
+                      Icons.person_pin_circle,
+                      color: Color(0xFF407BFF),
+                      size: 40,
+                    ),
                   ),
                 ],
               ),
-            
+
             // Parking Location Marker
             if (_parkingLatLng != null)
               MarkerLayer(
@@ -231,11 +235,15 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
                     point: _parkingLatLng!,
                     width: 40,
                     height: 40,
-                    child: const Icon(Icons.local_parking, color: Colors.red, size: 40),
+                    child: const Icon(
+                      Icons.local_parking,
+                      color: Colors.red,
+                      size: 40,
+                    ),
                   ),
                 ],
               ),
-            
+
             // Selected Location Marker (for location selection mode)
             if (_selectedLocation != null && widget.onLocationSelected != null)
               MarkerLayer(
@@ -244,19 +252,25 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
                     point: _selectedLocation!,
                     width: 40,
                     height: 40,
-                    child: const Icon(Icons.location_on, color: Colors.green, size: 40),
+                    child: const Icon(
+                      Icons.location_on,
+                      color: Colors.green,
+                      size: 40,
+                    ),
                   ),
                 ],
               ),
-            
+
             // Route between current location and parking spot
-            if (_currentLatLng != null && _parkingLatLng != null && _route.isNotEmpty)
+            if (_currentLatLng != null &&
+                _parkingLatLng != null &&
+                _route.isNotEmpty)
               PolylineLayer(
                 polylines: [
                   Polyline(
                     points: _route,
                     strokeWidth: 5,
-                    color: Colors.blue,
+                    color: Color(0xFF407BFF),
                   ),
                 ],
               ),
@@ -264,39 +278,42 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
         ),
 
         // Search UI
-        if (widget.onLocationSelected == null) // Only show search when not in selection mode
-          Positioned(
-            top: 8,
-            left: 8,
-            right: 8,
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _locationController,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.white,
-                      hintText: 'Search location',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  style: IconButton.styleFrom(backgroundColor: Colors.white),
-                  onPressed: () {
-                    final location = _locationController.text.trim();
-                    if (location.isNotEmpty) _fetchCoordinatePoints(location);
-                  },
-                  icon: const Icon(Icons.search),
-                ),
-              ],
-            ),
-          ),
+        // if (widget.onLocationSelected ==
+        //     null) // Only show search when not in selection mode
+        //   Positioned(
+        //     top: 8,
+        //     left: 8,
+        //     right: 8,
+        //     child: Row(
+        //       children: [
+        //         Expanded(
+        //           child: TextField(
+        //             controller: _locationController,
+        //             decoration: InputDecoration(
+        //               filled: true,
+        //               fillColor: Colors.white,
+        //               hintText: 'Search location',
+        //               border: OutlineInputBorder(
+        //                 borderRadius: BorderRadius.circular(30),
+        //                 borderSide: BorderSide.none,
+        //               ),
+        //               contentPadding: const EdgeInsets.symmetric(
+        //                 horizontal: 20,
+        //               ),
+        //             ),
+        //           ),
+        //         ),
+        //         IconButton(
+        //           style: IconButton.styleFrom(backgroundColor: Colors.white),
+        //           onPressed: () {
+        //             final location = _locationController.text.trim();
+        //             if (location.isNotEmpty) _fetchCoordinatePoints(location);
+        //           },
+        //           icon: const Icon(Icons.search),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
 
         // Current location button
         Positioned(
@@ -305,7 +322,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
           child: FloatingActionButton(
             shape: const CircleBorder(),
             onPressed: _userCurrentLocation,
-            backgroundColor: Colors.blue[100],
+            backgroundColor: Colors.white,
             child: const Icon(Icons.gps_fixed_rounded),
           ),
         ),

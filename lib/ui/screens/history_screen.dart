@@ -130,38 +130,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
           ),
           Expanded(
             child: ListView(
-              // addAutomaticKeepAlives: false,
-              // children: [
-              //   dateLabelWidget('Yesterday'),
-              //   for (int i = 0; i < 5; i++) ...{
-              //     Padding(
-              //       padding: EdgeInsets.symmetric(horizontal: 10),
-              //       child: ParkingItemWidget(
-              //         title: 'Porsche 911',
-              //         imgUrl:
-              //             "https://i.pinimg.com/736x/8a/41/59/8a4159e41cd24e689834e31a80dbf9fb.jpg",
-              //         description:
-              //             "Car parked in a shaded spot to avoid direct sunlight. Please remember to validate your parking ticket before leaving.",
-              //       ),
-              //     ),
-              //   },
-              //   Padding(
-              //     padding: const EdgeInsets.only(top: 10),
-              //     child: dateLabelWidget('Yesterday'),
-              //   ),
-              //   for (int i = 0; i < 5; i++) ...{
-              //     Padding(
-              //       padding: EdgeInsets.symmetric(horizontal: 10),
-              //       child: ParkingItemWidget(
-              //         title: 'Porsche 911',
-              //         imgUrl:
-              //             "https://i.pinimg.com/736x/8a/41/59/8a4159e41cd24e689834e31a80dbf9fb.jpg",
-              //         description:
-              //             "Car parked in a shaded spot to avoid direct sunlight. Please remember to validate your parking ticket before leaving.",
-              //       ),
-              //     ),
-              //   },
-              // ],
               addAutomaticKeepAlives: false,
               children: [
                 for (var entry in _groupedHistory.entries) ...[

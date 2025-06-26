@@ -13,11 +13,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final String title;
   final ParkingSpot? parkingSpot;
 
-  const HomeScreen({
-    super.key,
-    required this.title,
-    this.parkingSpot,
-  });
+  const HomeScreen({super.key, required this.title, this.parkingSpot});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -67,7 +63,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (permission == LocationPermission.deniedForever) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Location permissions are permanently denied, enable in app settings'),
+            content: Text(
+              'Location permissions are permanently denied, enable in app settings',
+            ),
           ),
         );
         return;
@@ -87,9 +85,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _navigateToCreateParking() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const CreateParkingScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const CreateParkingScreen()),
     );
   }
 
@@ -130,11 +126,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Parked at: ${widget.parkingSpot!.location}',
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'Parked at: ${widget.parkingSpot!.location}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             if (widget.parkingSpot!.currentPosition != null)
-              Text('Current Location: ${_formatPosition(widget.parkingSpot!.currentPosition!)}'),
+              Text(
+                'Current Location: ${_formatPosition(widget.parkingSpot!.currentPosition!)}',
+              ),
             const SizedBox(height: 8),
             if (widget.parkingSpot!.notes.isNotEmpty)
               Text('Notes: ${widget.parkingSpot!.notes}'),
@@ -148,7 +148,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
-                      child: Image.file(File(widget.parkingSpot!.imageUrls[index])),
+                      child: Image.file(
+                        File(widget.parkingSpot!.imageUrls[index]),
+                      ),
                     );
                   },
                 ),
@@ -167,36 +169,35 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Montserrat',
+          ),
+        ),
         actions: [
-          // Vehicle Button
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  border: BoxBorder.all(width: 1, color: Colors.grey.shade800),
-                  borderRadius: BorderRadius.circular(8),
+          Padding(
+            padding: const EdgeInsets.only(right: 6.0), // Adjust as needed
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: Colors.grey.shade800),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: _openBottomSheet,
-                icon: const Icon(Icons.pedal_bike_rounded),
-              ),
-            ],
-          ),
-          // Location Button
-          IconButton(
-            onPressed: _handleLocationPermission,
-            icon: const Icon(Icons.location_on),
-            tooltip: 'Get current location',
-          ),
-          // Add Parking Button
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _navigateToCreateParking,
+                IconButton(
+                  onPressed: _openBottomSheet,
+                  icon: const Icon(Icons.pedal_bike_rounded),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -213,14 +214,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
           // Parking info section
           if (widget.parkingSpot != null) _buildParkingInfo(),
-
-          // Parking spots list
-          
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _handleLocationPermission,
-        child: const Icon(Icons.location_searching),
       ),
     );
   }

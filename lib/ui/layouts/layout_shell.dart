@@ -92,7 +92,7 @@ class LayoutShell extends StatelessWidget {
             Iconify(
               _getIconData(destination.icon),
               size: 24,
-              color: isSelected ? Colors.blue : Colors.blueGrey,
+              color: isSelected ? Color(0xFF407BFF) : Colors.blueGrey,
             ),
             const SizedBox(height: 4),
             Text(
@@ -100,7 +100,7 @@ class LayoutShell extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? Colors.blue : Colors.blueGrey,
+                color: isSelected ? Color(0xFF407BFF) : Colors.blueGrey,
               ),
             ),
           ],
