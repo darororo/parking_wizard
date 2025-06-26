@@ -2,9 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/ui/widgets/save/parking_item_widget.dart';
 import 'package:parking_wizard/ui/widgets/datefilter.dart';
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:parking_wizard/common/models/parking_model.dart';
+import 'package:parking_wizard/common/service/parking_service.dart';
 
 class SaveScreenItem {
   final String dateLabel;
+
   final String title;
   final String imgUrl;
   final String description;
@@ -28,6 +34,8 @@ class SaveScreen extends StatefulWidget {
 }
 
 class _SaveScreenState extends State<SaveScreen> {
+  final ParkingService _databaseService = ParkingService.instance;
+
   final List<SaveScreenItem> _save = [
     SaveScreenItem(
       dateLabel: "Today",
@@ -60,55 +68,103 @@ class _SaveScreenState extends State<SaveScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        forceMaterialTransparency: true,
-        toolbarHeight: 50,
-        leadingWidth: 40,
-        title: Text(
-          widget.title,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Montserrat',
-          ),
-        ),
+      // appBar: AppBar(
+      //   forceMaterialTransparency: true,
+      //   toolbarHeight: 50,
+      //   leadingWidth: 40,
+      //   title: Text(
+      //     widget.title,
+      //     style: const TextStyle(
+      //       color: Colors.black,
+      //       fontSize: 18,
+      //       fontWeight: FontWeight.w600,
+      //       fontFamily: 'Montserrat',
+      //     ),
+      //   ),
 
-        backgroundColor: Colors.white,
-      ),
-      backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: filterButtonWidget(),
-          ),
-          Expanded(
-            child: ListView(
-              addAutomaticKeepAlives: false,
-              children: [
-                for (var entry in _groupedHistory.entries) ...[
-                  dateLabelWidget(entry.key),
-                  for (var item in entry.value)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: ParkingItemWidget(
-                        title: item.title,
-                        imgUrl: item.imgUrl,
-                        description: item.description,
-                        time: item.time,
-                        onTap: () {
-                          context.push('/parking');
-                        },
-                      ),
-                    ),
-                  const SizedBox(height: 10),
-                ],
-              ],
-            ),
-          ),
-        ],
-      ),
+      //   backgroundColor: Colors.white,
+      // ),
+      // backgroundColor: Colors.white,
+      // body: Column(
+      //   children: [
+      //     Padding(
+      //       padding: const EdgeInsets.only(bottom: 10),
+      //       child: filterButtonWidget(),
+      //     ),
+      //     Expanded(
+      //       child: ListView(
+      //         addAutomaticKeepAlives: false,
+      //         children: [
+      //           for (var entry in _groupedHistory.entries) ...[
+      //             dateLabelWidget(entry.key),
+      //             for (var item in entry.value)
+      //               Padding(
+      //                 padding: const EdgeInsets.symmetric(horizontal: 10),
+      //                 child: ParkingItemWidget(
+      //                   title: item.title,
+      //                   imgUrl: item.imgUrl,
+      //                   description: item.description,
+      //                   time: item.time,
+      //                   onTap: () {
+      //                     context.push('/parking');
+      //                   },
+      //                 ),
+      //               ),
+      //             const SizedBox(height: 10),
+      //           ],
+      //         ],
+      //       ),
+      //     ),
+      //   ],
+      // ),
+
+      // SEANG
+      appBar: AppBar(title: Text(widget.title)),
+      body: _parkingList(),
+    );
+  }
+
+  Widget _parkingList() {
+    return FutureBuilder<List<ParkingSpot>>(
+      future: _databaseService.getParking(), // You need to implement this
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('No parking spots saved.'));
+        }
+
+        final spots = snapshot.data!;
+
+        return ListView.builder(
+          itemCount: spots.length,
+          itemBuilder: (context, index) {
+            final spot = spots[index];
+            return ListTile(
+              leading: (spot.imageUrls != null && spot.imageUrls.isNotEmpty)
+                  ? spot.imageUrls[0].startsWith('http')
+                        ? Image.network(
+                            spot.imageUrls[0],
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.file(
+                            File(spot.imageUrls[0]),
+                            height: 50,
+                            width: 50,
+                            fit: BoxFit.cover,
+                          )
+                  : const Icon(Icons.local_parking),
+              title: Text(spot.title),
+              subtitle: Text(spot.notes),
+              trailing: Text(spot.parkingTime.toLocal().toString()),
+            );
+          },
+        );
+      },
     );
   }
 
