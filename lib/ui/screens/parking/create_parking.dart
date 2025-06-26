@@ -430,6 +430,8 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
 
                   await _databaseService.createParking(spot);
 
+                  // await _databaseService.clearAllParkings();
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Parking saved!')),
                   );
