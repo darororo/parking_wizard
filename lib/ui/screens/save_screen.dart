@@ -33,36 +33,46 @@ class SaveScreen extends StatefulWidget {
 class _SaveScreenState extends State<SaveScreen> {
   final ParkingService _databaseService = ParkingService.instance;
 
-  DateTime _selectedDate = DateTime.now();
+  late Future<List<ParkingSpot>> _parkingFuture;
 
-  // final List<SaveScreenItem> _save = [
-  //   SaveScreenItem(
-  //     dateLabel: "Today",
-  //     title: "GT2 RS",
-  //     imgUrl:
-  //         "https://i.pinimg.com/736x/36/04/24/36042426ea56fa94687ea684705043d1.jpg",
-  //     description:
-  //         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-  //     time: "7:00 AM",
-  //   ),
-  //   SaveScreenItem(
-  //     dateLabel: "Today",
-  //     title: "GT3 RS",
-  //     imgUrl:
-  //         "https://i.pinimg.com/736x/57/70/60/57706026cec1428ff595f215655f2a86.jpg",
-  //     description:
-  //         "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
-  //     time: "12:00 PM",
-  //   ),
-  // ];
-  // // group item by date
-  // Map<String, List<SaveScreenItem>> get _groupedHistory {
-  //   final Map<String, List<SaveScreenItem>> map = {};
-  //   for (var item in _save) {
-  //     map.putIfAbsent(item.dateLabel, () => []).add(item);
-  //   }
-  //   return map;
-  // }
+  @override
+  void initState() {
+    super.initState();
+    _loadParking(); // Initial load
+  }
+
+  void _loadParking() {
+    _parkingFuture = _databaseService.getParking();
+  }
+
+  final List<SaveScreenItem> _save = [
+    SaveScreenItem(
+      dateLabel: "Today",
+      title: "GT2 RS",
+      imgUrl:
+          "https://i.pinimg.com/736x/36/04/24/36042426ea56fa94687ea684705043d1.jpg",
+      description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
+      time: "7:00 AM",
+    ),
+    SaveScreenItem(
+      dateLabel: "Today",
+      title: "GT3 RS",
+      imgUrl:
+          "https://i.pinimg.com/736x/57/70/60/57706026cec1428ff595f215655f2a86.jpg",
+      description:
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ",
+      time: "12:00 PM",
+    ),
+  ];
+  // group item by date
+  Map<String, List<SaveScreenItem>> get _groupedHistory {
+    final Map<String, List<SaveScreenItem>> map = {};
+    for (var item in _save) {
+      map.putIfAbsent(item.dateLabel, () => []).add(item);
+    }
+    return map;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -212,7 +222,7 @@ class _SaveScreenState extends State<SaveScreen> {
 
   Widget _parkingList() {
     return FutureBuilder<List<ParkingSpot>>(
-      future: _databaseService.getParking(),
+      future: _parkingFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -243,48 +253,104 @@ class _SaveScreenState extends State<SaveScreen> {
           }
         }
 
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: filterButtonWidget(_selectedDate),
-            ),
-            Expanded(
-              child: groupedByDate.isEmpty
-                  ? const Center(child: Text('No data for selected date.'))
-                  : ListView(
-                      addAutomaticKeepAlives: false,
-                      children: [
-                        for (var entry in groupedByDate.entries) ...[
-                          dateLabelWidget(entry.key),
-                          for (var spot in entry.value)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                              child: ParkingItemWidget(
-                                title: spot.title,
-                                imgUrl: (spot.imageUrls.isNotEmpty)
-                                    ? (spot.imageUrls[0].startsWith('http')
-                                          ? spot.imageUrls[0]
-                                          : File(spot.imageUrls[0]).path)
-                                    : 'https://via.placeholder.com/150',
-                                description: spot.notes,
-                                time: spot.parkingTime
-                                    .toLocal()
-                                    .toString()
-                                    .substring(11, 16),
-                                onTap: () {
-                                  context.push('/parking');
-                                },
-                              ),
-                            ),
-                          const SizedBox(height: 10),
-                        ],
-                      ],
+        // return Column(
+        //   children: [
+        //     Padding(
+        //       padding: const EdgeInsets.only(bottom: 10),
+        //       child: filterButtonWidget(_selectedDate),
+        //     ),
+        //     Expanded(
+        //       child: groupedByDate.isEmpty
+        //           ? const Center(child: Text('No data for selected date.'))
+        //           : ListView(
+        //               addAutomaticKeepAlives: false,
+        //               children: [
+        //                 for (var entry in groupedByDate.entries) ...[
+        //                   dateLabelWidget(entry.key),
+        //                   for (var spot in entry.value)
+        //                     Padding(
+        //                       padding: const EdgeInsets.symmetric(
+        //                         horizontal: 10,
+        //                       ),
+        //                       child: ParkingItemWidget(
+        //                         title: spot.title,
+        //                         imgUrl: (spot.imageUrls.isNotEmpty)
+        //                             ? (spot.imageUrls[0].startsWith('http')
+        //                                   ? spot.imageUrls[0]
+        //                                   : File(spot.imageUrls[0]).path)
+        //                             : 'https://via.placeholder.com/150',
+        //                         description: spot.notes,
+        //                         time: spot.parkingTime
+        //                             .toLocal()
+        //                             .toString()
+        //                             .substring(11, 16),
+        //                         onTap: () {
+        //                           context.push('/parking');
+        //                         },
+        //                       ),
+        //                     ),
+        //                   const SizedBox(height: 10),
+        //                 ],
+        //               ],
+        //             ),
+        //     ),
+        //   ],)
+
+        // CRUD2
+        return ListView.builder(
+          itemCount: spots.length,
+          itemBuilder: (context, index) {
+            final spot = spots[index];
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      spot.title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-            ),
-          ],
+                    const SizedBox(height: 8),
+                    Text(spot.notes),
+                    const SizedBox(height: 12),
+                    if (spot.imageUrls.isNotEmpty)
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: spot.imageUrls.map((url) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: url.startsWith('http')
+                                ? Image.network(
+                                    url,
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.file(
+                                    File(url),
+                                    width: 80,
+                                    height: 80,
+                                    fit: BoxFit.cover,
+                                  ),
+                          );
+                        }).toList(),
+                      ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Parked at: ${spot.parkingTime.toLocal()}',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );

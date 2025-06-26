@@ -426,8 +426,12 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
                     location: _selectedLocation,
                     notes: _notesText ?? '',
                     parkingTime: DateTime.now(),
+                    imageUrls: _selectedImages
+                        .map((file) => file.path)
+                        .toList(),
                   );
 
+                  await _databaseService.clearAllParkings();
                   await _databaseService.createParking(spot);
 
                   // await _databaseService.clearAllParkings();

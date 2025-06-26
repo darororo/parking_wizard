@@ -6,7 +6,7 @@ import 'package:geolocator/geolocator.dart';
 class ParkingSpot {
   static int _idCounter = 0; // static counter for IDs
 
-  final String id;
+  final int? id;
   final String title;
   final String location;
   final String notes;
@@ -18,8 +18,8 @@ class ParkingSpot {
   final Position? currentPosition;
 
   ParkingSpot({
-    String? id,
-    // required this.title,
+    this.id,
+    String? title,
     required this.location,
     required this.notes,
     required this.parkingTime,
@@ -28,13 +28,12 @@ class ParkingSpot {
     this.latitude,
     this.longitude,
     this.currentPosition,
-  }) : id = id ?? (++_idCounter).toString(),
-       status = status ?? ParkingStatus.values.first,
-       title = 'My First Vehicle';
+  }) : status = status ?? ParkingStatus.values.first,
+       title = title ?? 'My Vehicle ${id ?? _idCounter}';
 
   factory ParkingSpot.fromMap(Map<String, dynamic> map) {
     return ParkingSpot(
-      id: map['id']?.toString(), // use existing id if present
+      id: map['id'] as int?,
       // title: map['title'] ?? '',
       location: map['location'] ?? '',
       notes: map['notes'] ?? '',
@@ -49,8 +48,7 @@ class ParkingSpot {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
+    final map = {
       'title': title,
       'location': location,
       'notes': notes,
@@ -60,5 +58,12 @@ class ParkingSpot {
       'latitude': latitude,
       'longitude': longitude,
     };
+
+    // Only include id when updating (not needed on insert)
+    if (id != null) {
+      map['id'] = id;
+    }
+
+    return map;
   }
 }

@@ -57,20 +57,20 @@ class ParkingService {
   Future<void> createParking(ParkingSpot spot) async {
     final db = await database;
 
-    await db.insert(_tableName, {
-      // _titleColumnName: title,
-      _titleColumnName: spot.title,
-      // _imageColumnName: imageUrls,
-      _imageColumnName: jsonEncode([
-        "https://i.pinimg.com/736x/cb/38/6a/cb386ad02edb00c831e32643b2e7f306.jpg",
-      ]),
-      _parkingTimeColumnName: spot.parkingTime.toIso8601String(),
-      _notesColumnName: spot.notes,
-      _locationColumnName: spot.location,
-      _statusColumnName: 1,
-      _latitudeColumnName: 1,
-      _longitudeColumnName: 1,
-    });
+    // await db.insert(_tableName, {
+    //   // _titleColumnName: title,
+    //   _titleColumnName: spot.title,
+    //   // _imageColumnName: imageUrls,
+    //   _imageColumnName: jsonEncode(spot.imageUrls),
+    //   _parkingTimeColumnName: spot.parkingTime.toIso8601String(),
+    //   _notesColumnName: spot.notes,
+    //   _locationColumnName: spot.location,
+    //   _statusColumnName: 1,
+    //   _latitudeColumnName: 1,
+    //   _longitudeColumnName: 1,
+    // });
+
+    await db.insert(_tableName, spot.toMap());
   }
 
   Future<List<ParkingSpot>> getParking() async {
@@ -78,6 +78,34 @@ class ParkingService {
     final data = await db.query(_tableName);
 
     return data.map((map) => ParkingSpot.fromMap(map)).toList();
+  }
+
+  Future<void> updateParking(ParkingSpot spot) async {
+    final db = await database;
+
+    // await db.update(_tableName, {
+    //   _titleColumnName: spot.title,
+    //   _imageColumnName: jsonEncode(spot.imageUrls),
+    //   _parkingTimeColumnName: spot.parkingTime.toIso8601String(),
+    //   _notesColumnName: spot.notes,
+    //   _locationColumnName: spot.location,
+    //   _statusColumnName: 1,
+    //   _latitudeColumnName: 1,
+    //   _longitudeColumnName: 1,
+    // });
+
+    await db.update(_tableName, spot.toMap());
+  }
+
+  Future<void> updateParkingStatus(int id, int newStatus) async {
+    final db = await database;
+
+    await db.update(
+      _tableName,
+      {_statusColumnName: newStatus},
+      where: '$_idColumnName = ?',
+      whereArgs: [id],
+    );
   }
 
   Future<void> deleteParking(ParkingSpot spot) async {
