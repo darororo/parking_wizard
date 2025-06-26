@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconify_flutter/icons/ic.dart';
+import 'package:parking_wizard/common/enums/parking_status.dart';
+import 'package:parking_wizard/common/models/parking_model.dart';
+import 'package:parking_wizard/common/service/parking_service.dart';
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
@@ -12,6 +17,10 @@ class CreateParkingScreen extends StatefulWidget {
 }
 
 class _CreateParkingScreenState extends State<CreateParkingScreen> {
+  final ParkingService _databaseService = ParkingService.instance;
+
+  String? _notesText = '';
+
   final TextEditingController _notesController = TextEditingController();
   String _selectedLocation = "Balaşılır amaniam Salai"; // Default location
   final List<String> _imagePaths = [];
@@ -172,6 +181,9 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: TextField(
+              onChanged: (value) {
+                _notesText = value;
+              },
               maxLines: null,
               decoration: InputDecoration(
                 labelText: 'Add a note about the parking',
@@ -199,7 +211,21 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
               width: double.infinity,
               height: 56,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final spot = ParkingSpot(
+                    location: _selectedLocation,
+                    notes: _notesText ?? '',
+                    parkingTime: DateTime.now(),
+                  );
+
+                  await _databaseService.createParking(spot);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Parking saved!')),
+                  );
+
+                  context.go('/home');
+                },
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.blue,
                   foregroundColor: Colors.blue,

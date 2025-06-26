@@ -1,10 +1,13 @@
+import 'dart:convert';
+
 import 'package:parking_wizard/common/enums/parking_status.dart';
 import 'package:geolocator/geolocator.dart';
 
 class ParkingSpot {
+  static int _idCounter = 0; // static counter for IDs
+
   final String id;
   final String title;
-  final String description;
   final String location;
   final String notes;
   final DateTime parkingTime;
@@ -15,9 +18,8 @@ class ParkingSpot {
   final Position? currentPosition;
 
   ParkingSpot({
-    required this.id,
-    required this.title,
-    required this.description,
+    String? id,
+    // required this.title,
     required this.location,
     required this.notes,
     required this.parkingTime,
@@ -26,17 +28,20 @@ class ParkingSpot {
     this.latitude,
     this.longitude,
     this.currentPosition,
-  }) : status = status ?? ParkingStatus.values.first;
+  }) : id = id ?? (++_idCounter).toString(),
+       status = status ?? ParkingStatus.values.first,
+       title = 'My First Vehicle';
 
   factory ParkingSpot.fromMap(Map<String, dynamic> map) {
     return ParkingSpot(
-      id: map['id'] ?? '',
-      title: map['title'] ?? '',
-      description: map['description'] ?? '',
+      id: map['id']?.toString(), // use existing id if present
+      // title: map['title'] ?? '',
       location: map['location'] ?? '',
       notes: map['notes'] ?? '',
       parkingTime: DateTime.parse(map['parkingTime']),
-      imageUrls: List<String>.from(map['imageUrls'] ?? []),
+      imageUrls: map['imageUrls'] != null
+          ? List<String>.from(jsonDecode(map['imageUrls']))
+          : [],
       status: ParkingStatus.values[map['status'] ?? 0],
       latitude: map['latitude'],
       longitude: map['longitude'],
@@ -47,11 +52,10 @@ class ParkingSpot {
     return {
       'id': id,
       'title': title,
-      'description': description,
       'location': location,
       'notes': notes,
       'parkingTime': parkingTime.toIso8601String(),
-      'imageUrls': imageUrls,
+      'imageUrls': jsonEncode(imageUrls),
       'status': status.index,
       'latitude': latitude,
       'longitude': longitude,
