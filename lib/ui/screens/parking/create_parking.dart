@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
+import 'package:parking_wizard/data/database/database_helper.dart';
 import 'package:parking_wizard/ui/screens/home_screen/home_screen.dart';
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class CreateParkingScreen extends StatefulWidget {
   const CreateParkingScreen({super.key});
@@ -15,10 +18,15 @@ class CreateParkingScreen extends StatefulWidget {
 
 class _CreateParkingScreenState extends State<CreateParkingScreen> {
   final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
   String _selectedLocation = "Balaşılır amaniam Salai"; // Default location
   final List<String> _imagePaths = [];
   Position? _currentPosition;
   bool _isLoadingLocation = true;
+  bool _isSaving = false;
+
+  final dbHelper = DatabaseHelper();
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -26,9 +34,22 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
     _getCurrentLocation();
   }
 
+  Future<void> _insertSampleData() async {
+    try {
+      await dbHelper.insertSampleData(); // Now this works - public method
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Sample data inserted successfully!")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error inserting sample data: ${e.toString()}")),
+      );
+    }
+  }
+
   Future<void> _getCurrentLocation() async {
     setState(() => _isLoadingLocation = true);
-    
+
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
@@ -41,7 +62,7 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
-        if (permission != LocationPermission.whileInUse && 
+        if (permission != LocationPermission.whileInUse &&
             permission != LocationPermission.always) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text("Location permissions are denied")),
@@ -111,7 +132,6 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
               ),
             ),
 
-           
             ElevatedButton(
               onPressed: _takePhoto,
               style: ElevatedButton.styleFrom(
@@ -198,7 +218,7 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
 
             // Save Parking Button
             ElevatedButton(
-              onPressed: _saveParking,
+              onPressed: _insertData,
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.white,
                 backgroundColor: Colors.blue.shade400,
@@ -223,20 +243,29 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
   }
 
   Future<void> _takePhoto() async {
-    // Implement camera functionality
-    // final image = await ImagePicker().pickImage(source: ImageSource.camera);
-    // if (image != null) {
-    //   setState(() {
-    //     _imagePaths.add(image.path);
-    //   });
-    // }
+    try {
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+      );
+
+      if (photo != null) {
+        setState(() {
+          _imagePaths.add(photo.path);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error taking photo: ${e.toString()}")),
+      );
+    }
   }
 
   void _saveParking() {
     if (_selectedLocation.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a location")),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please select a location")));
       return;
     }
 
@@ -261,18 +290,77 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (context) => HomeScreen(
-          title: 'Parking Wizard',
-          parkingSpot: parkingSpot,
-        ),
+        builder: (context) =>
+            HomeScreen(title: 'Parking Wizard', parkingSpot: parkingSpot),
       ),
       (route) => false,
     );
   }
 
+  Future<void> _insertData() async {
+    if (_selectedLocation.isEmpty ||
+        _selectedLocation == "Balaşılır amaniam Salai") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please select a location on the map")),
+      );
+      return;
+    }
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("P: $_currentPosition")));
+    print("P: $_currentPosition");
+    if (_currentPosition == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Current location not available")),
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    try {
+      final now = DateTime.now();
+      final parkingData = {
+        'title': 'Parking at $_selectedLocation',
+        'description': _notesController.text.trim().isEmpty
+            ? 'No description provided'
+            : _notesController.text.trim(),
+        'image_urls': jsonEncode(_imagePaths),
+        'latitude': _currentPosition?.latitude,
+        'longitude': _currentPosition?.longitude,
+        'status': 'parking',
+        'created_at': now.toIso8601String(),
+        'updated_at': now.toIso8601String(),
+      };
+      print("$parkingData : data");
+
+      final id = await dbHelper.insertData('parking', parkingData);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Parking saved successfully! ID: $id")),
+        );
+        // Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error saving parking: ${e.toString()}")),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSaving = false);
+      }
+    }
+  }
+
   @override
   void dispose() {
     _notesController.dispose();
+    _titleController.dispose();
+
     super.dispose();
   }
 }
