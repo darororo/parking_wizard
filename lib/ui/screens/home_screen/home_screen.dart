@@ -10,6 +10,7 @@ import 'package:parking_wizard/ui/screens/home_screen/widgets/cat_bottom_sheet.d
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
 import 'package:parking_wizard/ui/screens/parking/create_parking.dart';
 import 'package:parking_wizard/ui/screens/parking/parking_detail_screen.dart';
+import 'package:parking_wizard/ui/screens/parking_locations/parking_locations.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   final String title;
