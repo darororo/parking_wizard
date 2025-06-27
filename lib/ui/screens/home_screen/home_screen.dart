@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
 import 'package:parking_wizard/ui/screens/home_screen/widgets/cat_bottom_sheet.dart';
+import 'package:parking_wizard/ui/screens/home_screen/widgets/location_bottom_sheet.dart';
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
 import 'package:parking_wizard/ui/screens/parking/create_parking.dart';
 import 'package:parking_wizard/ui/screens/parking/parking_detail_screen.dart';
@@ -36,6 +37,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     showModalBottomSheet(
       context: context,
       builder: (ctx) => const CatBottomSheet(),
+    );
+  }
+
+  void _openLocationBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => const LocationBottomSheet(),
     );
   }
 
@@ -209,6 +217,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: OpenStreetMapWidget(
               currentLocation: _currentPosition,
               parkingLocation: widget.parkingSpot?.location,
+              onCurrentLocationTap:
+                  _openLocationBottomSheet, // Add this callback
             ),
           ),
 

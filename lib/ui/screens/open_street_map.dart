@@ -11,12 +11,14 @@ class OpenStreetMapWidget extends StatefulWidget {
   final Position? currentLocation;
   final String? parkingLocation;
   final Function(String)? onLocationSelected;
+  final VoidCallback? onCurrentLocationTap; // Add this callback
 
   const OpenStreetMapWidget({
     super.key,
     this.currentLocation,
     this.parkingLocation,
     this.onLocationSelected,
+    this.onCurrentLocationTap, // Add this parameter
   });
 
   @override
@@ -210,7 +212,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
               userAgentPackageName: 'com.example.parking_wizard',
             ),
 
-            // Current Location Marker
+            // Current Location Marker - Now clickable
             if (_currentLatLng != null)
               MarkerLayer(
                 markers: [
@@ -218,10 +220,18 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
                     point: _currentLatLng!,
                     width: 40,
                     height: 40,
-                    child: const Icon(
-                      Icons.person_pin_circle,
-                      color: Color(0xFF407BFF),
-                      size: 40,
+                    child: GestureDetector(
+                      onTap: () {
+                        // Call the callback when current location marker is tapped
+                        if (widget.onCurrentLocationTap != null) {
+                          widget.onCurrentLocationTap!();
+                        }
+                      },
+                      child: const Icon(
+                        Icons.person_pin_circle,
+                        color: Color(0xFF407BFF),
+                        size: 40,
+                      ),
                     ),
                   ),
                 ],
@@ -276,44 +286,6 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
               ),
           ],
         ),
-
-        // Search UI
-        // if (widget.onLocationSelected ==
-        //     null) // Only show search when not in selection mode
-        //   Positioned(
-        //     top: 8,
-        //     left: 8,
-        //     right: 8,
-        //     child: Row(
-        //       children: [
-        //         Expanded(
-        //           child: TextField(
-        //             controller: _locationController,
-        //             decoration: InputDecoration(
-        //               filled: true,
-        //               fillColor: Colors.white,
-        //               hintText: 'Search location',
-        //               border: OutlineInputBorder(
-        //                 borderRadius: BorderRadius.circular(30),
-        //                 borderSide: BorderSide.none,
-        //               ),
-        //               contentPadding: const EdgeInsets.symmetric(
-        //                 horizontal: 20,
-        //               ),
-        //             ),
-        //           ),
-        //         ),
-        //         IconButton(
-        //           style: IconButton.styleFrom(backgroundColor: Colors.white),
-        //           onPressed: () {
-        //             final location = _locationController.text.trim();
-        //             if (location.isNotEmpty) _fetchCoordinatePoints(location);
-        //           },
-        //           icon: const Icon(Icons.search),
-        //         ),
-        //       ],
-        //     ),
-        //   ),
 
         // Current location button
         Positioned(
