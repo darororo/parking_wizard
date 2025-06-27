@@ -1,6 +1,11 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:iconify_flutter/icons/ic.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:location/location.dart';
 import 'package:parking_wizard/common/enums/parking_status.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
+import 'package:parking_wizard/common/providers/destination_location_provider.dart';
+import 'package:parking_wizard/common/providers/parking_spot_list.provider.dart';
 import 'package:parking_wizard/common/service/parking_service.dart';
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
 import 'package:intl/intl.dart';
@@ -14,15 +19,18 @@ import 'package:parking_wizard/common/enums/parking_status.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
 import 'package:parking_wizard/common/service/parking_service.dart';
 
-class CreateParkingScreen extends StatefulWidget {
+class CreateParkingScreen extends ConsumerStatefulWidget {
   const CreateParkingScreen({super.key});
 
   @override
-  State<CreateParkingScreen> createState() => _CreateParkingScreenState();
+  ConsumerState<CreateParkingScreen> createState() =>
+      _CreateParkingScreenState();
 }
 
-class _CreateParkingScreenState extends State<CreateParkingScreen> {
+class _CreateParkingScreenState extends ConsumerState<CreateParkingScreen> {
   final ParkingService _databaseService = ParkingService.instance;
+  final Location _locationService = Location();
+  LatLng? destination;
 
   String? _notesText = '';
 
@@ -446,6 +454,8 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
                       location: _selectedLocation,
                       notes: _notesText ?? '',
                       parkingTime: DateTime.now(),
+                      latitude: destination?.latitude,
+                      longitude: destination?.longitude,
                       imageUrls: _selectedImages
                           .map((file) => file.path)
                           .toList(),
@@ -455,8 +465,13 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
                     await _databaseService.createParking(spot);
 
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Parking saved!')),
+                      const SnackBar(content: Text('Parking Saved')),
                     );
+
+                    ref.read(parkingSpotListProvider.notifier).add(spot);
+
+                    ref.read(destinationLocationProvider.notifier).state =
+                        destination;
 
                     context.go('/home');
                   },
@@ -485,41 +500,27 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
     );
   }
 
-  // Widget _buildImage(String url) {
-  //   return Container(
-  //     width: 260,
-  //     height: 160,
-  //     margin: const EdgeInsets.only(bottom: 4),
-  //     decoration: BoxDecoration(
-  //       borderRadius: BorderRadius.circular(12),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withOpacity(0.1),
-  //           blurRadius: 8,
-  //           offset: Offset(0, 4),
-  //         ),
-  //       ],
-  //     ),
-  //     child: ClipRRect(
-  //       borderRadius: BorderRadius.circular(12),
-  //       child: Image.network(
-  //         url,
-  //         fit: BoxFit.cover,
-  //         loadingBuilder: (context, child, loadingProgress) {
-  //           if (loadingProgress == null) return child;
-  //           return Container(
-  //             color: Colors.grey[200],
-  //             child: const Center(child: CircularProgressIndicator()),
-  //           );
-  //         },
-  //         errorBuilder: (context, error, stackTrace) => Container(
-  //           color: Colors.grey[300],
-  //           child: const Center(
-  //             child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
+  Future<void> _initLocation() async {
+    // if (widget.currentLocation != null) {
+    //   setState(() {
+    //     _currentLatLng = LatLng(
+    //       widget.currentLocation!.latitude,
+    //       widget.currentLocation!.longitude,
+    //     );
+    //     _isLoading = false;
+    //   });
+    //   return;
+    // }
+
+    // if (!await _checkRequestPermissions()) {
+    //   setState(() => _isLoading = false);
+    //   return;
+    // }
+
+    _locationService.onLocationChanged.listen((LocationData locationData) {
+      if (locationData.latitude != null && locationData.longitude != null) {
+        destination = LatLng(locationData.latitude!, locationData.longitude!);
+      }
+    });
+  }
 }

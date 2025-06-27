@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
+import 'package:parking_wizard/common/providers/destination_location_provider.dart';
+import 'package:parking_wizard/common/providers/parking_spot_list.provider.dart';
+import 'package:parking_wizard/common/service/parking_service.dart';
 import 'package:parking_wizard/ui/screens/home_screen/widgets/cat_bottom_sheet.dart';
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
 import 'package:parking_wizard/ui/screens/parking/create_parking.dart';
@@ -22,6 +25,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   Position? _currentPosition;
   final List<ParkingSpot> _parkingSpots = [];
+  final ParkingService _databaseService = ParkingService.instance;
 
   @override
   void initState() {
@@ -30,6 +34,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (widget.parkingSpot != null) {
       _parkingSpots.add(widget.parkingSpot!);
     }
+
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    final parkings = await _databaseService.getParking();
+    ref.read(parkingSpotListProvider.notifier).copy(parkings);
   }
 
   void _openBottomSheet() {
@@ -167,6 +178,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dest = ref.watch(destinationLocationProvider);
+    String lat = dest != null ? dest.latitude.toString() : 'lat is null';
+    String long = dest != null ? dest.longitude.toString() : 'long is null';
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -203,6 +217,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: Column(
         children: [
+          Text('lat $lat lon $long'),
           // Map showing current and parking locations
           Expanded(
             flex: 2,

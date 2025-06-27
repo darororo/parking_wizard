@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:parking_wizard/common/providers/destination_location_provider.dart';
 
-class OpenStreetMapWidget extends StatefulWidget {
+class OpenStreetMapWidget extends ConsumerStatefulWidget {
   final Position? currentLocation;
   final String? parkingLocation;
   final Function(String)? onLocationSelected;
@@ -20,10 +22,11 @@ class OpenStreetMapWidget extends StatefulWidget {
   });
 
   @override
-  State<OpenStreetMapWidget> createState() => _OpenStreetMapWidgetState();
+  ConsumerState<OpenStreetMapWidget> createState() =>
+      _OpenStreetMapWidgetState();
 }
 
-class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
+class _OpenStreetMapWidgetState extends ConsumerState<OpenStreetMapWidget> {
   final MapController _mapController = MapController();
   final TextEditingController _locationController = TextEditingController();
   final Location _locationService = Location();
@@ -95,6 +98,12 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
             _parkingLatLng = LatLng(lat, lon);
             _destination = _parkingLatLng;
           });
+
+          ref.read(destinationLocationProvider.notifier).state = LatLng(
+            lat,
+            lon,
+          );
+
           await _fetchRoute();
           _mapController.move(_parkingLatLng!, 15);
         } else {
@@ -145,13 +154,39 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
   }
 
   Future<void> _fetchRoute() async {
-    if (_currentLatLng == null || _destination == null) return;
+    final destination = ref.read(destinationLocationProvider);
+    if (_currentLatLng == null || destination == null) return;
 
     try {
       final url = Uri.parse(
         "http://router.project-osrm.org/route/v1/driving/"
         "${_currentLatLng!.longitude},${_currentLatLng!.latitude};"
-        "${_destination!.longitude},${_destination!.latitude}"
+        "${destination!.longitude},${destination!.latitude}"
+        "?overview=full&geometries=polyline",
+      );
+
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final geometry = data['routes'][0]['geometry'];
+        _decodePolyline(geometry);
+      } else {
+        _showErrorMessage('Failed to fetch route');
+      }
+    } catch (e) {
+      _showErrorMessage('Route error: ${e.toString()}');
+    }
+  }
+
+  Future<void> _fetchRouteFromDest() async {
+    final destination = ref.read(destinationLocationProvider);
+    if (_currentLatLng == null || destination == null) return;
+
+    try {
+      final url = Uri.parse(
+        "http://router.project-osrm.org/route/v1/driving/"
+        "${_currentLatLng!.longitude},${_currentLatLng!.latitude};"
+        "${destination!.longitude},${destination!.latitude}"
         "?overview=full&geometries=polyline",
       );
 
@@ -278,42 +313,43 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
         ),
 
         // Search UI
-        // if (widget.onLocationSelected ==
-        //     null) // Only show search when not in selection mode
-        //   Positioned(
-        //     top: 8,
-        //     left: 8,
-        //     right: 8,
-        //     child: Row(
-        //       children: [
-        //         Expanded(
-        //           child: TextField(
-        //             controller: _locationController,
-        //             decoration: InputDecoration(
-        //               filled: true,
-        //               fillColor: Colors.white,
-        //               hintText: 'Search location',
-        //               border: OutlineInputBorder(
-        //                 borderRadius: BorderRadius.circular(30),
-        //                 borderSide: BorderSide.none,
-        //               ),
-        //               contentPadding: const EdgeInsets.symmetric(
-        //                 horizontal: 20,
-        //               ),
-        //             ),
-        //           ),
-        //         ),
-        //         IconButton(
-        //           style: IconButton.styleFrom(backgroundColor: Colors.white),
-        //           onPressed: () {
-        //             final location = _locationController.text.trim();
-        //             if (location.isNotEmpty) _fetchCoordinatePoints(location);
-        //           },
-        //           icon: const Icon(Icons.search),
-        //         ),
-        //       ],
-        //     ),
-        //   ),
+        if (widget.onLocationSelected ==
+            null) // Only show search when not in selection mode
+          Positioned(
+            top: 8,
+            left: 8,
+            right: 8,
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _locationController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: 'Search location',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  style: IconButton.styleFrom(backgroundColor: Colors.white),
+                  onPressed: () {
+                    final location = _locationController.text.trim();
+                    if (location.isNotEmpty) _fetchCoordinatePoints(location);
+                    // _fetchRouteFromDest();
+                  },
+                  icon: const Icon(Icons.search),
+                ),
+              ],
+            ),
+          ),
 
         // Current location button
         Positioned(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:parking_wizard/common/providers/parking_spot_list.provider.dart';
 import 'package:parking_wizard/ui/widgets/save/parking_item_widget.dart';
 import 'package:parking_wizard/ui/widgets/datefilter.dart';
 import 'dart:io';
@@ -28,15 +30,34 @@ class SaveScreenItem {
   });
 }
 
-class SaveScreen extends StatefulWidget {
+final activeSaveScreenItemProvider =
+    StateNotifierProvider<SaveScreenItemNotifier, SaveScreenItem?>((ref) {
+      return SaveScreenItemNotifier();
+    });
+
+class SaveScreenItemNotifier extends StateNotifier<SaveScreenItem?> {
+  SaveScreenItemNotifier() : super(null);
+
+  // Set the active spot
+  void setActiveSpot(SaveScreenItem item) {
+    state = item;
+  }
+
+  // Clear the active spot
+  void clearActiveSpot() {
+    state = null;
+  }
+}
+
+class SaveScreen extends ConsumerStatefulWidget {
   const SaveScreen({super.key, required this.title});
   final String title;
 
   @override
-  State<SaveScreen> createState() => _SaveScreenState();
+  ConsumerState<SaveScreen> createState() => _SaveScreenState();
 }
 
-class _SaveScreenState extends State<SaveScreen> {
+class _SaveScreenState extends ConsumerState<SaveScreen> {
   // crud
   final ParkingService _databaseService = ParkingService.instance;
   late Future<List<ParkingSpot>> _parkingFuture;
@@ -45,11 +66,17 @@ class _SaveScreenState extends State<SaveScreen> {
   @override
   void initState() {
     super.initState();
-    _loadParking(); // Initial load
+    _initData();
+    _loadParking();
   }
 
   void _loadParking() {
     _parkingFuture = _databaseService.getParking();
+  }
+
+  Future<void> _initData() async {
+    final parkings = await _databaseService.getParking();
+    ref.read(parkingSpotListProvider.notifier).state = parkings;
   }
 
   // Convert ParkingSpot to SaveScreenItem and group by date
@@ -234,6 +261,9 @@ class _SaveScreenState extends State<SaveScreen> {
                     description: item.description,
                     time: item.time,
                     onTap: () {
+                      ref
+                          .read(activeSaveScreenItemProvider.notifier)
+                          .setActiveSpot(item);
                       context.push('/parking');
                     },
                   ),
@@ -243,6 +273,41 @@ class _SaveScreenState extends State<SaveScreen> {
           ],
         );
       },
+    );
+  }
+
+  Widget _parkingListRiverPod() {
+    final parkings = ref.read(parkingSpotListProvider);
+    return ListView(
+      addAutomaticKeepAlives: false,
+      children: [
+        for (var item in parkings) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: ParkingItemWidget(
+              title: item.title,
+              imgUrl: item.imageUrls[0],
+              description: item.notes,
+              time: item.title,
+              onTap: () {
+                ref
+                    .read(activeSaveScreenItemProvider.notifier)
+                    .setActiveSpot(
+                      SaveScreenItem(
+                        dateLabel: 'Today',
+                        title: item.title,
+                        imgUrl: item.imageUrls[0],
+                        description: item.notes,
+                        time: 'today',
+                      ),
+                    );
+                context.push('/parking');
+              },
+            ),
+          ),
+          const SizedBox(height: 10),
+        ],
+      ],
     );
   }
 

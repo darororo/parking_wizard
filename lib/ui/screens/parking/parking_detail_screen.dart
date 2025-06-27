@@ -1,23 +1,26 @@
 // lib/ui/screens/parking/parking_detail_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
 import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:parking_wizard/common/service/parking_service.dart';
+import 'package:parking_wizard/ui/screens/save_screen.dart';
 // TODO: Replace the import below with the correct path if different
 // Make sure that the OpenStreetMap widget is defined in the imported file.
 // If OpenStreetMap is not defined, define it as a widget or replace it with a valid widget.
 
-class ParkingDetailScreen extends StatefulWidget {
+class ParkingDetailScreen extends ConsumerStatefulWidget {
   final ParkingSpot parkingSpot;
 
   const ParkingDetailScreen({super.key, required this.parkingSpot});
 
   @override
-  State<ParkingDetailScreen> createState() => _ParkingDetailScreenState();
+  ConsumerState<ParkingDetailScreen> createState() =>
+      _ParkingDetailScreenState();
 }
 
-class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
+class _ParkingDetailScreenState extends ConsumerState<ParkingDetailScreen> {
   final ParkingService _databaseService = ParkingService.instance;
 
   late ParkingSpot _parkingSpot;
@@ -48,6 +51,7 @@ class _ParkingDetailScreenState extends State<ParkingDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final parkingItem = ref.read(activeSaveScreenItemProvider);
     if (_isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
