@@ -10,6 +10,8 @@ import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/common/enums/parking_status.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
 import 'package:parking_wizard/common/service/parking_service.dart';
+import 'package:another_flushbar/flushbar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CreateParkingScreen extends StatefulWidget {
   const CreateParkingScreen({super.key});
@@ -62,6 +64,15 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
   void _removeImage(int index) {
     setState(() {
       _selectedImages.removeAt(index);
+    });
+  }
+
+  void _clearFormData() {
+    setState(() {
+      _selectedLocation = '';
+      _notesText = '';
+      _selectedImages.clear();
+      _currentPosition = null;
     });
   }
 
@@ -424,8 +435,6 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
               width: double.infinity,
               height: 56,
               child: TextButton(
-                // onPressed: () {},
-                // crud
                 onPressed: () async {
                   final spot = ParkingSpot(
                     location: _selectedLocation,
@@ -434,17 +443,86 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
                     imageUrls: _selectedImages
                         .map((file) => file.path)
                         .toList(),
+                    currentPosition: _currentPosition, // Add current position
                   );
 
+                  // Save to database
+                  // await _databaseService.clearAllParkings();
                   await _databaseService.createParking(spot);
 
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Parking saved!')),
-                  );
-
-                  context.go('/home');
+                  // clear form data
+                  _clearFormData();
+                  Flushbar(
+                    icon: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.location_on,
+                        size: 22,
+                        color: Colors.white,
+                      ),
+                    ),
+                    shouldIconPulse: false,
+                    backgroundColor: const Color(0xFF407BFF),
+                    titleText: Text(
+                      'Parking Location',
+                      style: GoogleFonts.montserrat(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.2,
+                      ),
+                    ),
+                    messageText: Text(
+                      '404 Street, Phnom Penh\nMountain Way, KA 3000 (Phnom Penh)',
+                      style: GoogleFonts.montserrat(
+                        color: Colors.white.withOpacity(0.92),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w400,
+                        height: 2,
+                        letterSpacing: 0.1,
+                      ),
+                    ),
+                    onTap: (_) {
+                      print('Parking location bar clicked');
+                      context.go('/home');
+                    },
+                    duration: const Duration(seconds: 10),
+                    flushbarPosition: FlushbarPosition.TOP,
+                    borderRadius: BorderRadius.circular(10),
+                    margin: const EdgeInsets.fromLTRB(6, 10, 6, 0),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 18,
+                    ),
+                    boxShadows: [
+                      BoxShadow(
+                        color: const Color(0xFF407BFF).withOpacity(0.25),
+                        blurRadius: 16,
+                        offset: const Offset(0, 4),
+                        spreadRadius: 0,
+                      ),
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                        spreadRadius: 0,
+                      ),
+                    ],
+                    leftBarIndicatorColor: Colors.white.withOpacity(0.4),
+                  ).show(context);
+                  // Navigate to home after 10 seconds
+                  Future.delayed(Duration(seconds: 10), () {
+                    context.go('/home');
+                  });
                 },
-
                 style: TextButton.styleFrom(
                   backgroundColor: Color(0xFF407BFF),
                   foregroundColor: Color(0xFF407BFF),
@@ -468,42 +546,4 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
       ),
     );
   }
-
-  // Widget _buildImage(String url) {
-  //   return Container(
-  //     width: 260,
-  //     height: 160,
-  //     margin: const EdgeInsets.only(bottom: 4),
-  //     decoration: BoxDecoration(
-  //       borderRadius: BorderRadius.circular(12),
-  //       boxShadow: [
-  //         BoxShadow(
-  //           color: Colors.black.withOpacity(0.1),
-  //           blurRadius: 8,
-  //           offset: Offset(0, 4),
-  //         ),
-  //       ],
-  //     ),
-  //     child: ClipRRect(
-  //       borderRadius: BorderRadius.circular(12),
-  //       child: Image.network(
-  //         url,
-  //         fit: BoxFit.cover,
-  //         loadingBuilder: (context, child, loadingProgress) {
-  //           if (loadingProgress == null) return child;
-  //           return Container(
-  //             color: Colors.grey[200],
-  //             child: const Center(child: CircularProgressIndicator()),
-  //           );
-  //         },
-  //         errorBuilder: (context, error, stackTrace) => Container(
-  //           color: Colors.grey[300],
-  //           child: const Center(
-  //             child: Icon(Icons.broken_image, size: 40, color: Colors.grey),
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }
