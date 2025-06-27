@@ -79,6 +79,17 @@ class ParkingService {
     return data.map((map) => ParkingSpot.fromMap(map)).toList();
   }
 
+  Future<ParkingSpot> getParkingId(int id) async {
+    final db = await database;
+    final data = await db.query(_tableName, where: 'id = ?', whereArgs: [id]);
+
+    if (data.isNotEmpty) {
+      return ParkingSpot.fromMap(data.first);
+    } else {
+      throw Exception('ParkingSpot with id $id not found.');
+    }
+  }
+
   Future<void> updateParking(ParkingSpot spot) async {
     final db = await database;
 
@@ -110,7 +121,11 @@ class ParkingService {
   Future<void> deleteParking(ParkingSpot spot) async {
     final db = await database;
 
-    await db.delete(_tableName, where: 'id = ?', whereArgs: [spot.id]);
+    await db.delete(
+      _tableName,
+      where: '$_idColumnName = ?',
+      whereArgs: [spot.id],
+    );
   }
 
   Future<void> clearAllParkings() async {

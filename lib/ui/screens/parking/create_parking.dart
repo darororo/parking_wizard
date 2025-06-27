@@ -451,6 +451,7 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
                           .toList(),
                     );
 
+                    // await _databaseService.clearAllParkings();
                     await _databaseService.createParking(spot);
 
                     ScaffoldMessenger.of(context).showSnackBar(
