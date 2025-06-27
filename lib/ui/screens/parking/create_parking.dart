@@ -31,8 +31,6 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
   final List<String> _imagePaths = [];
 
   // crud
-  final ParkingService _databaseService = ParkingService.instance;
-  String? _notesText = '';
 
   Position? _currentPosition;
   bool _isLoadingLocation = true;
@@ -128,349 +126,360 @@ class _CreateParkingScreenState extends State<CreateParkingScreen> {
 
         backgroundColor: Colors.white,
       ),
-      body: Column(
-        children: [
-          Stack(
-            children: [
-              Container(
-                clipBehavior: Clip.antiAlias,
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                decoration: BoxDecoration(
-                  border: Border.all(width: 0),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                height: MediaQuery.sizeOf(context).height * 0.25,
-                child: OpenStreetMapWidget(),
-              ),
-              Positioned(
-                top: 36,
-                right: 36,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                Container(
+                  clipBehavior: Clip.antiAlias,
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF00B894),
-                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(width: 0),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      const Text(
-                        'Live',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'Montserrat',
-                        ),
-                      ),
-                    ],
-                  ),
+                  height: MediaQuery.sizeOf(context).height * 0.25,
+                  child: OpenStreetMapWidget(),
                 ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                //selct image from camera
-                TextButton(
-                  onPressed: () {
-                    _pickImageFromCamera();
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                Positioned(
+                  top: 36,
+                  right: 36,
+                  child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
-                      vertical: 8,
+                      vertical: 6,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF00B894),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                  ),
-
-                  child: Row(
-                    children: const [
-                      Icon(
-                        Icons.camera_alt,
-                        color: Colors.white, // White icon
-                      ),
-                      SizedBox(width: 8),
-                      Text(
-                        'Take Photo',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white, // White text
-                          fontFamily: 'Montserrat',
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 10.0),
-                // select image from gallery
-                TextButton(
-                  onPressed: () {
-                    _pickImageFromGallery();
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.photo_library, color: Colors.white),
-                      SizedBox(width: 8),
-                      Text(
-                        _selectedImages.isNotEmpty ? 'Gallery' : 'Gallery',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.w500,
+                        const SizedBox(width: 6),
+                        const Text(
+                          'Live',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Montserrat',
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
-          ),
-
-          if (_selectedImages != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: SizedBox(
-                height: 200,
-                child: _selectedImages.isEmpty
-                    ? Center(
-                        child: Container(
-                          width: 260,
-                          height: 180,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey, width: 1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            'No images selected.',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontFamily: 'Montserrat',
-                              color: Colors.grey,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            textAlign: TextAlign.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  //selct image from camera
+                  TextButton(
+                    onPressed: () {
+                      _pickImageFromCamera();
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+
+                    child: Row(
+                      children: const [
+                        Icon(
+                          Icons.camera_alt,
+                          color: Colors.white, // White icon
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Take Photo',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white, // White text
+                            fontFamily: 'Montserrat',
                           ),
                         ),
-                      )
-                    : SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: _selectedImages.asMap().entries.map((
-                            entry,
-                          ) {
-                            int index = entry.key;
-                            File file = entry.value;
-                            return Stack(
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(right: 16),
-                                  width: 260,
-                                  height: 180,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    boxShadow: [],
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.file(file, fit: BoxFit.cover),
-                                  ),
-                                ),
-                                Positioned(
-                                  bottom: 12,
-                                  right: 28,
-                                  child: GestureDetector(
-                                    onTap: () => _removeImage(index),
-                                    child: Container(
-                                      padding: const EdgeInsets.all(8),
-                                      decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.6),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: const Icon(
-                                        Icons.delete,
-                                        color: Colors.white,
-                                        size: 16,
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 10.0),
+                  // select image from gallery
+                  TextButton(
+                    onPressed: () {
+                      _pickImageFromGallery();
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.photo_library, color: Colors.white),
+                        SizedBox(width: 8),
+                        Text(
+                          _selectedImages.isNotEmpty ? 'Gallery' : 'Gallery',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Montserrat',
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            if (_selectedImages != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: SizedBox(
+                  height: 200,
+                  child: _selectedImages.isEmpty
+                      ? Center(
+                          child: Container(
+                            width: 260,
+                            height: 180,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey, width: 1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'No images selected.',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'Montserrat',
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      : SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: _selectedImages.asMap().entries.map((
+                              entry,
+                            ) {
+                              int index = entry.key;
+                              File file = entry.value;
+                              return Stack(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.only(right: 16),
+                                    width: 260,
+                                    height: 180,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      boxShadow: [],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.file(
+                                        file,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
+                                  Positioned(
+                                    bottom: 12,
+                                    right: 28,
+                                    child: GestureDetector(
+                                      onTap: () => _removeImage(index),
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.6),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                        child: const Icon(
+                                          Icons.delete,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Notes',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF2D3436),
+                          fontFamily: 'Montserrat',
                         ),
                       ),
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Notes',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Color(0xFF2D3436),
-                        fontFamily: 'Montserrat',
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF00B894).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.access_time_rounded,
-                            size: 14,
-                            color: Color(0xFF00B894),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            DateFormat('h:mm a').format(DateTime.now()),
-                            style: const TextStyle(
-                              fontSize: 12,
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF00B894).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(
+                              Icons.access_time_rounded,
+                              size: 14,
                               color: Color(0xFF00B894),
-                              fontWeight: FontWeight.w600,
-                              fontFamily: 'Montserrat',
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 4),
+                            Text(
+                              DateFormat('h:mm a').format(DateTime.now()),
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Color(0xFF00B894),
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'Montserrat',
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Container(
-              height: 120,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: TextFormField(
-                  //crud
-                  onChanged: (value) {
-                    _notesText = value;
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Container(
+                height: 120,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: TextFormField(
+                    //crud
+                    onChanged: (value) {
+                      _notesText = value;
+                    },
+
+                    maxLines: null,
+                    expands: true,
+                    textAlignVertical: TextAlignVertical.top,
+                    style: TextStyle(fontFamily: 'Montserrat', fontSize: 14),
+                    decoration: InputDecoration(
+                      hintText: 'Add a note about the parking...',
+                      hintStyle: TextStyle(
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w400,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey),
+                      ),
+                      contentPadding: EdgeInsets.all(16),
+                      floatingLabelBehavior: FloatingLabelBehavior.never,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: TextButton(
+                  // onPressed: () {},
+                  // crud
+                  onPressed: () async {
+                    final spot = ParkingSpot(
+                      location: _selectedLocation,
+                      notes: _notesText ?? '',
+                      parkingTime: DateTime.now(),
+                      imageUrls: _selectedImages
+                          .map((file) => file.path)
+                          .toList(),
+                    );
+
+                    await _databaseService.createParking(spot);
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Parking saved!')),
+                    );
+
+                    context.go('/home');
                   },
-
-                  maxLines: null,
-                  expands: true,
-                  textAlignVertical: TextAlignVertical.top,
-                  style: TextStyle(fontFamily: 'Montserrat', fontSize: 14),
-                  decoration: InputDecoration(
-                    hintText: 'Add a note about the parking...',
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                      fontWeight: FontWeight.w400,
-                    ),
-                    border: OutlineInputBorder(
+                  style: TextButton.styleFrom(
+                    backgroundColor: Color(0xFF407BFF),
+                    foregroundColor: Color(0xFF407BFF),
+                    shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey),
+                  ),
+                  child: Text(
+                    'Save Parking',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                      fontFamily: 'Montserrat',
+                      color: Colors.white,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    contentPadding: EdgeInsets.all(16),
-                    floatingLabelBehavior: FloatingLabelBehavior.never,
                   ),
                 ),
               ),
             ),
-          ),
-          SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: TextButton(
-                // onPressed: () {},
-                // crud
-                onPressed: () async {
-                  final spot = ParkingSpot(
-                    location: _selectedLocation,
-                    notes: _notesText ?? '',
-                    parkingTime: DateTime.now(),
-                    imageUrls: _selectedImages
-                        .map((file) => file.path)
-                        .toList(),
-                  );
-
-                  await _databaseService.createParking(spot);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Parking saved!')),
-                  );
-
-                  context.go('/home');
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: Color(0xFF407BFF),
-                  foregroundColor: Color(0xFF407BFF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Save Parking',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                    fontFamily: 'Montserrat',
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -30,19 +30,11 @@ class ParkingSpot {
     this.longitude,
     this.currentPosition,
   }) : status = status ?? ParkingStatus.values.first,
-<<<<<<< HEAD
-       title = title ?? 'My Vehicle ${id ?? _idCounter}';
-=======
        title = title ?? 'My Vehicle ${id ?? ++_idCounter}';
->>>>>>> 385437a (new update crud)
 
   factory ParkingSpot.fromMap(Map<String, dynamic> map) {
     return ParkingSpot(
       id: map['id'] as int?,
-<<<<<<< HEAD
-      // title: map['title'] ?? '',
-=======
->>>>>>> 385437a (new update crud)
       location: map['location'] ?? '',
       notes: map['notes'] ?? '',
       parkingTime: DateTime.parse(map['parkingTime']),
@@ -56,11 +48,7 @@ class ParkingSpot {
   }
 
   Map<String, dynamic> toMap() {
-<<<<<<< HEAD
-    final map = {
-=======
     final map = <String, dynamic>{
->>>>>>> 385437a (new update crud)
       'title': title,
       'location': location,
       'notes': notes,

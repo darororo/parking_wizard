@@ -1,8 +1,4 @@
 import 'dart:convert';
-<<<<<<< HEAD
-
-=======
->>>>>>> 385437a (new update crud)
 import 'package:flutter/material.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
 import 'package:path/path.dart';
