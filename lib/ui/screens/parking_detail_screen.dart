@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
+import 'package:parking_wizard/ui/screens/save_screen.dart';
 
-class ParkingDetailScreen extends StatelessWidget {
+class ParkingDetailScreen extends ConsumerWidget {
   final String title;
   final String imgUrl;
   final String description;
@@ -17,7 +21,8 @@ class ParkingDetailScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final parkingItem = ref.read(activeSaveScreenItemProvider);
     return Scaffold(
       appBar: AppBar(
         forceMaterialTransparency: true,
@@ -66,17 +71,8 @@ class ParkingDetailScreen extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            _buildImage(
-                              'https://i.pinimg.com/736x/cb/38/6a/cb386ad02edb00c831e32643b2e7f306.jpg',
-                            ),
+                            Image.file(File(parkingItem!.imgUrl)),
                             const SizedBox(width: 12),
-                            _buildImage(
-                              'https://i.pinimg.com/736x/ec/e0/6e/ece06e300e3a809becbdb651d8d49299.jpg',
-                            ),
-                            const SizedBox(width: 12),
-                            _buildImage(
-                              'https://i.pinimg.com/736x/65/ae/db/65aedb82a3de3584fbba370c0a2f80a4.jpg',
-                            ),
                           ],
                         ),
                       ),
@@ -86,7 +82,7 @@ class ParkingDetailScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Porsche GT3 911',
+                          parkingItem!.title,
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -106,7 +102,7 @@ class ParkingDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Location: No. 28, Street 302, BKK1, Phnom Penh, Cambodia',
+                      parkingItem.time,
                       style: const TextStyle(
                         fontSize: 13,
                         color: Colors.black,
@@ -123,7 +119,7 @@ class ParkingDetailScreen extends StatelessWidget {
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
                             'My Notes',
                             style: TextStyle(
@@ -137,7 +133,7 @@ class ParkingDetailScreen extends StatelessWidget {
                           Divider(color: Color(0xFFCCCCCC), thickness: 1),
                           SizedBox(height: 6),
                           Text(
-                            'I parked my vehicle near building 3, in front the E Luk Bay.',
+                            parkingItem.description,
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.black,

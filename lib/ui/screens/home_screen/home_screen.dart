@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 import 'package:parking_wizard/common/models/parking_model.dart';
+import 'package:parking_wizard/common/providers/destination_location_provider.dart';
+import 'package:parking_wizard/common/providers/parking_spot_list.provider.dart';
+import 'package:parking_wizard/common/service/parking_service.dart';
 import 'package:parking_wizard/ui/screens/home_screen/widgets/cat_bottom_sheet.dart';
 import 'package:parking_wizard/ui/screens/open_street_map.dart';
 import 'package:parking_wizard/ui/screens/parking/create_parking.dart';
@@ -13,11 +16,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   final String title;
   final ParkingSpot? parkingSpot;
 
-  const HomeScreen({
-    super.key,
-    required this.title,
-    this.parkingSpot,
-  });
+  const HomeScreen({super.key, required this.title, this.parkingSpot});
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
@@ -26,6 +25,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   Position? _currentPosition;
   final List<ParkingSpot> _parkingSpots = [];
+  final ParkingService _databaseService = ParkingService.instance;
 
   @override
   void initState() {
@@ -34,6 +34,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (widget.parkingSpot != null) {
       _parkingSpots.add(widget.parkingSpot!);
     }
+
+    _initData();
+  }
+
+  Future<void> _initData() async {
+    final parkings = await _databaseService.getParking();
+    ref.read(parkingSpotListProvider.notifier).copy(parkings);
   }
 
   void _openBottomSheet() {
@@ -67,7 +74,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (permission == LocationPermission.deniedForever) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Location permissions are permanently denied, enable in app settings'),
+            content: Text(
+              'Location permissions are permanently denied, enable in app settings',
+            ),
           ),
         );
         return;
@@ -87,9 +96,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void _navigateToCreateParking() {
     Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const CreateParkingScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const CreateParkingScreen()),
     );
   }
 
@@ -130,11 +137,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Parked at: ${widget.parkingSpot!.location}',
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'Parked at: ${widget.parkingSpot!.location}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             if (widget.parkingSpot!.currentPosition != null)
-              Text('Current Location: ${_formatPosition(widget.parkingSpot!.currentPosition!)}'),
+              Text(
+                'Current Location: ${_formatPosition(widget.parkingSpot!.currentPosition!)}',
+              ),
             const SizedBox(height: 8),
             if (widget.parkingSpot!.notes.isNotEmpty)
               Text('Notes: ${widget.parkingSpot!.notes}'),
@@ -148,7 +159,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   itemBuilder: (context, index) {
                     return Padding(
                       padding: const EdgeInsets.only(right: 8),
-                      child: Image.file(File(widget.parkingSpot!.imageUrls[index])),
+                      child: Image.file(
+                        File(widget.parkingSpot!.imageUrls[index]),
+                      ),
                     );
                   },
                 ),
@@ -165,43 +178,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final dest = ref.watch(destinationLocationProvider);
+    String lat = dest != null ? dest.latitude.toString() : 'lat is null';
+    String long = dest != null ? dest.longitude.toString() : 'long is null';
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+          widget.title,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            fontFamily: 'Montserrat',
+          ),
+        ),
         actions: [
-          // Vehicle Button
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  border: BoxBorder.all(width: 1, color: Colors.grey.shade800),
-                  borderRadius: BorderRadius.circular(8),
+          Padding(
+            padding: const EdgeInsets.only(right: 6.0), // Adjust as needed
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    border: Border.all(width: 1, color: Colors.grey.shade800),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
-              ),
-              IconButton(
-                onPressed: _openBottomSheet,
-                icon: const Icon(Icons.pedal_bike_rounded),
-              ),
-            ],
-          ),
-          // Location Button
-          IconButton(
-            onPressed: _handleLocationPermission,
-            icon: const Icon(Icons.location_on),
-            tooltip: 'Get current location',
-          ),
-          // Add Parking Button
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _navigateToCreateParking,
+                IconButton(
+                  onPressed: _openBottomSheet,
+                  icon: const Icon(Icons.pedal_bike_rounded),
+                ),
+              ],
+            ),
           ),
         ],
       ),
       body: Column(
         children: [
+          Text('lat $lat lon $long'),
           // Map showing current and parking locations
           Expanded(
             flex: 2,
@@ -213,14 +229,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
           // Parking info section
           if (widget.parkingSpot != null) _buildParkingInfo(),
-
-          // Parking spots list
-          
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _handleLocationPermission,
-        child: const Icon(Icons.location_searching),
       ),
     );
   }

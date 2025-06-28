@@ -2,16 +2,18 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:parking_wizard/common/providers/destination_location_provider.dart';
 
-class OpenStreetMapWidget extends StatefulWidget {
+class OpenStreetMapWidget extends ConsumerStatefulWidget {
   final Position? currentLocation;
   final String? parkingLocation;
   final Function(String)? onLocationSelected;
-  
+
   const OpenStreetMapWidget({
     super.key,
     this.currentLocation,
@@ -20,10 +22,11 @@ class OpenStreetMapWidget extends StatefulWidget {
   });
 
   @override
-  State<OpenStreetMapWidget> createState() => _OpenStreetMapWidgetState();
+  ConsumerState<OpenStreetMapWidget> createState() =>
+      _OpenStreetMapWidgetState();
 }
 
-class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
+class _OpenStreetMapWidgetState extends ConsumerState<OpenStreetMapWidget> {
   final MapController _mapController = MapController();
   final TextEditingController _locationController = TextEditingController();
   final Location _locationService = Location();
@@ -84,7 +87,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
         'https://nominatim.openstreetmap.org/search?q=$location&format=json&limit=1',
       );
       final response = await http.get(url);
-      
+
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         if (data.isNotEmpty) {
@@ -95,6 +98,12 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
             _parkingLatLng = LatLng(lat, lon);
             _destination = _parkingLatLng;
           });
+
+          ref.read(destinationLocationProvider.notifier).state = LatLng(
+            lat,
+            lon,
+          );
+
           await _fetchRoute();
           _mapController.move(_parkingLatLng!, 15);
         } else {
@@ -139,19 +148,45 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
   }
 
   void _showErrorMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _fetchRoute() async {
-    if (_currentLatLng == null || _destination == null) return;
+    final destination = ref.read(destinationLocationProvider);
+    if (_currentLatLng == null || destination == null) return;
 
     try {
       final url = Uri.parse(
         "http://router.project-osrm.org/route/v1/driving/"
         "${_currentLatLng!.longitude},${_currentLatLng!.latitude};"
-        "${_destination!.longitude},${_destination!.latitude}"
+        "${destination!.longitude},${destination!.latitude}"
+        "?overview=full&geometries=polyline",
+      );
+
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final geometry = data['routes'][0]['geometry'];
+        _decodePolyline(geometry);
+      } else {
+        _showErrorMessage('Failed to fetch route');
+      }
+    } catch (e) {
+      _showErrorMessage('Route error: ${e.toString()}');
+    }
+  }
+
+  Future<void> _fetchRouteFromDest() async {
+    final destination = ref.read(destinationLocationProvider);
+    if (_currentLatLng == null || destination == null) return;
+
+    try {
+      final url = Uri.parse(
+        "http://router.project-osrm.org/route/v1/driving/"
+        "${_currentLatLng!.longitude},${_currentLatLng!.latitude};"
+        "${destination!.longitude},${destination!.latitude}"
         "?overview=full&geometries=polyline",
       );
 
@@ -209,7 +244,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               userAgentPackageName: 'com.example.parking_wizard',
             ),
-            
+
             // Current Location Marker
             if (_currentLatLng != null)
               MarkerLayer(
@@ -218,11 +253,15 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
                     point: _currentLatLng!,
                     width: 40,
                     height: 40,
-                    child: const Icon(Icons.person_pin_circle, color: Colors.blue, size: 40),
+                    child: const Icon(
+                      Icons.person_pin_circle,
+                      color: Color(0xFF407BFF),
+                      size: 40,
+                    ),
                   ),
                 ],
               ),
-            
+
             // Parking Location Marker
             if (_parkingLatLng != null)
               MarkerLayer(
@@ -231,11 +270,15 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
                     point: _parkingLatLng!,
                     width: 40,
                     height: 40,
-                    child: const Icon(Icons.local_parking, color: Colors.red, size: 40),
+                    child: const Icon(
+                      Icons.local_parking,
+                      color: Colors.red,
+                      size: 40,
+                    ),
                   ),
                 ],
               ),
-            
+
             // Selected Location Marker (for location selection mode)
             if (_selectedLocation != null && widget.onLocationSelected != null)
               MarkerLayer(
@@ -244,19 +287,25 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
                     point: _selectedLocation!,
                     width: 40,
                     height: 40,
-                    child: const Icon(Icons.location_on, color: Colors.green, size: 40),
+                    child: const Icon(
+                      Icons.location_on,
+                      color: Colors.green,
+                      size: 40,
+                    ),
                   ),
                 ],
               ),
-            
+
             // Route between current location and parking spot
-            if (_currentLatLng != null && _parkingLatLng != null && _route.isNotEmpty)
+            if (_currentLatLng != null &&
+                _parkingLatLng != null &&
+                _route.isNotEmpty)
               PolylineLayer(
                 polylines: [
                   Polyline(
                     points: _route,
                     strokeWidth: 5,
-                    color: Colors.blue,
+                    color: Color(0xFF407BFF),
                   ),
                 ],
               ),
@@ -264,7 +313,8 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
         ),
 
         // Search UI
-        if (widget.onLocationSelected == null) // Only show search when not in selection mode
+        if (widget.onLocationSelected ==
+            null) // Only show search when not in selection mode
           Positioned(
             top: 8,
             left: 8,
@@ -282,7 +332,9 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
                         borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                      ),
                     ),
                   ),
                 ),
@@ -291,6 +343,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
                   onPressed: () {
                     final location = _locationController.text.trim();
                     if (location.isNotEmpty) _fetchCoordinatePoints(location);
+                    // _fetchRouteFromDest();
                   },
                   icon: const Icon(Icons.search),
                 ),
@@ -305,7 +358,7 @@ class _OpenStreetMapWidgetState extends State<OpenStreetMapWidget> {
           child: FloatingActionButton(
             shape: const CircleBorder(),
             onPressed: _userCurrentLocation,
-            backgroundColor: Colors.blue[100],
+            backgroundColor: Colors.white,
             child: const Icon(Icons.gps_fixed_rounded),
           ),
         ),
